@@ -132,8 +132,11 @@ object MusicInfoManager:
 
         fun play() = controller.transportControls.play()
         fun pause() = controller.transportControls.pause()
-        fun fastForward() = controller.transportControls.fastForward()
-        fun rewind() = controller.transportControls.rewind()
+        fun fastForward() {
+            Timber.d("hmhm fast fora ${controller.packageName}")
+            controller.transportControls.skipToNext()
+        }
+        fun rewind() = controller.transportControls.skipToPrevious()
     }
 }
 

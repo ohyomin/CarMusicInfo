@@ -1,5 +1,5 @@
 
-import 'package:car_music_info/page/main_page.dart';
+import 'package:car_music_info/core/method_channel.dart';
 import 'package:flutter/material.dart';
 
 
@@ -8,12 +8,22 @@ class RemoteControllerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final commandChannel = MethodChannelInterface.get();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _IconButton(iconData: Icons.fast_rewind_rounded, callback: (){ print('hmhm'); }),
-        _IconButton(iconData: Icons.play_arrow_rounded, callback: (){}),
-        _IconButton(iconData: Icons.fast_forward_rounded, callback: (){}),
+        _IconButton(
+          iconData: Icons.fast_rewind_rounded,
+          callback: () => commandChannel.rewind(),
+        ),
+        _IconButton(
+          iconData: Icons.play_arrow_rounded,
+          callback: () => commandChannel.play(),
+        ),
+        _IconButton(
+          iconData: Icons.fast_forward_rounded,
+          callback: () => commandChannel.fastForward(),
+        ),
       ],
     );
   }

@@ -3,10 +3,13 @@ package com.ohmnia.car_music_info
 import android.content.Intent
 import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
+import com.ohmnia.car_music_info.core.Constants
 import com.ohmnia.car_music_info.core.MusicInfoManager
 import com.ohmnia.car_music_info.methodchannel.MusicInfoStreamChannel
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodChannel
+import timber.log.Timber
 
 class MainActivity: FlutterActivity() {
 
@@ -19,6 +22,18 @@ class MainActivity: FlutterActivity() {
 
         MusicInfoManager.registerMediaSessionListener(this)
         musicInfoStreamChannel.init(flutterEngine)
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, Constants.COMMAND_CHANNEL)
+            .setMethodCallHandler { call, result ->
+                Timber.d("Command ${call.method}")
+                when (call.method) {
+                    "play" -> MusicInfoManager.play()
+                    "pause" -> MusicInfoManager.pause()
+                    "rewind" -> MusicInfoManager.rewind()
+                    "fastForward" -> MusicInfoManager.fastForward()
+                }
+                result.success(null)
+            }
     }
 
 

@@ -26,8 +26,8 @@ class _MainPageState extends State<MainPage> {
       setState(() {
         title = event.title;
         artist = event.artist;
-        buffer = event.albumArt;
-        if (buffer != null) {
+        if (event.albumArt != null && event.albumArt!.isNotEmpty) {
+          buffer = event.albumArt;
           final blurHash = encoder.BlurHash.encode(
               img.decodeImage(buffer!)!, numCompX: 5, numCompY: 5);
           hash = blurHash.hash;
@@ -45,49 +45,48 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
+    return Material(
+      color: Colors.black,
+      child: Container(
         width: double.infinity,
         height: double.infinity,
         color: Colors.black,
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(10),
         child: Stack(
-          fit: StackFit.expand,
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
+                duration: const Duration(milliseconds: 1000),
                 child: _getBackGround(),
               ),
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                const SizedBox(height: 20),
-                Flexible(
-                  flex: 5,
-                  child: GlassBox(
-                    width: 400,
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GlassBox(
+                    width: 300,
                     child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 200),
+                      duration: const Duration(milliseconds: 1000),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        key: ValueKey(hash),
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const SizedBox(height: 15),
-                          Padding(
+                          Container(
                             padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                            height: 120,
                             child: TitleInfoWidget(
                               title: title,
                               artist: artist,
                             ),
                           ),
-                          const SizedBox(height: 15),
                           Flexible(
                             child: ConstrainedBox(
                               constraints: const BoxConstraints(
-                                maxHeight: 200,
-                                maxWidth: 200,
+                                maxWidth: 230,
+                                maxHeight: 230
                               ),
                               child: Container(
                                 decoration: BoxDecoration(
@@ -102,38 +101,25 @@ class _MainPageState extends State<MainPage> {
                                 ),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
-                                  child: _getAlbumArt(),
+                                  child: AspectRatio(
+                                    aspectRatio: 1,
+                                    child: _getAlbumArt(),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 15),
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 10),
-                            child: RemoteControllerWidget(),
+                          Container(
+                            height: 100,
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: const RemoteControllerWidget(),
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 20,),
-                Flexible(
-                  flex: 4,
-                  child: GlassBox(
-                    width: 400,
-                    //height: 300,
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 200),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: _getAlbumArt(),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20,),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -141,23 +127,27 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
+  static const placeHolder = BlurHash(hash: "L5H2EC=PM+yV0g-mq.wG9c010J}I");
+
   Widget _getBackGround() {
     if (hash == null) {
-      return const BlurHash(hash: "L5H2EC=PM+yV0g-mq.wG9c010J}I");
+      return placeHolder;
     }
 
-    return BlurHash(hash: hash!, key: UniqueKey());
+    return BlurHash(hash: hash!, key: ValueKey(hash));
   }
 
   Widget _getAlbumArt() {
-    if (buffer == null) return const SizedBox();
+    if (buffer == null)  {
+      return placeHolder;
+    }
 
-    return Image.memory(buffer!,
+    return Image.memory(
+      buffer!,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
         return const SizedBox();
       },
-      key: UniqueKey(),
     );
   }
 }

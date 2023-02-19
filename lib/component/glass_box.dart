@@ -25,16 +25,16 @@ class GlassBox extends StatelessWidget {
         height: height,
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            border: Border.all(color: Colors.white.withOpacity(0.3)),
             borderRadius: _borderRadius,
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Colors.white.withOpacity(0.3),
-                Colors.white.withOpacity(0.1),
-              ]
-            )
+                Colors.white.withOpacity(0.4),
+                Colors.white.withOpacity(0.2),
+              ],
+            ),
           ),
           child: Center(
             child: child,

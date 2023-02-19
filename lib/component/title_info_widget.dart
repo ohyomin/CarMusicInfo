@@ -2,19 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
-const _titleSize = 23.0;
-const _artistSize = 20.0;
-
-final _titleStyle = TextStyle(
-  fontWeight: FontWeight.bold,
-  fontSize: _titleSize,
-  color: Colors.black.withOpacity(0.8),
-);
-
-final _artistStyle = TextStyle(
-  fontSize: _artistSize,
-  color: Colors.black.withOpacity(0.6),
-);
+const _titleSize = 25.0;
+const _artistSize = 22.0;
 
 class TitleInfoWidget extends StatelessWidget {
   const TitleInfoWidget({
@@ -28,18 +17,26 @@ class TitleInfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
+      fontSize: _titleSize,
+      fontWeight: FontWeight.bold,
+    );
+
+    final artistStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
+      fontSize: _artistSize,
+    );
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _MarqueeText(
           fontSize: _titleSize,
-          style: _titleStyle,
+          style: titleStyle,
           text: title,
         ),
-        const SizedBox(height: 5),
         _MarqueeText(
           fontSize: _artistSize,
-          style: _artistStyle,
+          style: artistStyle,
           text: artist,
         ),
       ],
@@ -62,7 +59,7 @@ class _MarqueeText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: (fontSize + 13.0) * MediaQuery.of(context).textScaleFactor,
+      height: (fontSize + 10.0) * MediaQuery.of(context).textScaleFactor,
       child: AutoSizeText(
         text,
         minFontSize: fontSize,

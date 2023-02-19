@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 
 import '../model/music_info.dart';
 
-class MethodChannelInterface  {
+abstract class MethodChannelInterface {
 
   static MethodChannelInterface _instance = MusicInfoMethodChannel();
 
@@ -14,13 +14,21 @@ class MethodChannelInterface  {
 
   static MethodChannelInterface get() => _instance;
 
-  Stream<MusicInfo> get musicInfoStream => throw UnimplementedError();
+  Stream<MusicInfo> get musicInfoStream;
+
+  void play();
+  void pause();
+  void rewind();
+  void fastForward();
 }
 
 class MusicInfoMethodChannel extends MethodChannelInterface {
 
   static const String _musicInfoChannelName = "com.ohmnia.musicinfo";
+  static const String _commandChannelName = "com.ohmnia.command";
+
   static const _musicInfoChannel = EventChannel(_musicInfoChannelName);
+  static const _commandChannel = MethodChannel(_commandChannelName);
 
   static Stream<MusicInfo>? _musicInfoStream;
 
@@ -44,5 +52,25 @@ class MusicInfoMethodChannel extends MethodChannelInterface {
       );
 
     return _musicInfoStream!;
+  }
+
+  @override
+  void fastForward() {
+    _commandChannel.invokeMethod("fastForward");
+  }
+
+  @override
+  void pause() {
+    _commandChannel.invokeMethod("pause");
+  }
+
+  @override
+  void play() {
+    _commandChannel.invokeMethod("play");
+  }
+
+  @override
+  void rewind() {
+    _commandChannel.invokeMethod("rewind");
   }
 }

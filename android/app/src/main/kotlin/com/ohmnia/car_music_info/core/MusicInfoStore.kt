@@ -11,6 +11,9 @@ class MusicInfoStore {
 
     val store: Observable<MusicInfo> = subject
         .observeOn(AndroidSchedulers.mainThread())
+        .scan { old, new ->
+            new
+        }
         .distinctUntilChanged()
 
     fun addInfo(info: MusicInfo) = subject.onNext(info)
