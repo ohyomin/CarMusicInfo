@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import com.ohmnia.car_music_info.model.MusicInfo
 import com.ohmnia.car_music_info.service.MediaNotificationService
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import timber.log.Timber
 
@@ -20,7 +21,7 @@ object MusicInfoManager:
 
     private val callbacks = mutableListOf<SessionCallback>()
 
-    private var isInit = false;
+    private var isInit = false
 
     private var mainCallback: SessionCallback? = null
 
@@ -28,13 +29,14 @@ object MusicInfoManager:
 
     val musicInfoStore = MusicInfoStore()
 
-    fun subscribe(onNext: Consumer<MusicInfo>) = musicInfoStore.store.subscribe(onNext)
+    fun subscribe(onNext: Consumer<MusicInfo>): Disposable =
+        musicInfoStore.store.subscribe(onNext)
 
     private fun List<SessionCallback>.isNewController(controller: MediaController) =
         none{ it.sameToken(controller.sessionToken) }
 
     fun registerMediaSessionListener(context: Context) {
-        if (isInit) return;
+        if (isInit) return
 
         handler = Handler(Looper.getMainLooper())
 
@@ -46,9 +48,7 @@ object MusicInfoManager:
         val controllers = mediaSessionManager.getActiveSessions(componentName)
         registerMediaControllerCallback(controllers)
 
-        mediaSessionManager.run {
-            addOnActiveSessionsChangedListener(this@MusicInfoManager, componentName, handler)
-        }
+        mediaSessionManager.addOnActiveSessionsChangedListener(this, componentName, handler)
 
         isInit = true
     }
@@ -60,14 +60,14 @@ object MusicInfoManager:
     fun rewind() = mainCallback?.rewind()
 
     private fun registerMediaControllerCallback(controllers: MutableList<MediaController>?) {
-        controllers?.forEach {
-            if (callbacks.isNewController(it)) {
-                SessionCallback(it).apply{
-                    it.registerCallback(this)
+        controllers?.forEach { controller ->
+            if (callbacks.isNewController(controller)) {
+                SessionCallback(controller).apply{
+                    controller.registerCallback(this)
                     callbacks.add(this)
                     Timber.d("Added callback ${callbacks.size}")
 
-                    if (it.playbackState?.state == PlaybackState.STATE_PLAYING) {
+                    if (controller.playbackState?.state == PlaybackState.STATE_PLAYING) {
                         setMainCallback()
                     }
                 }
@@ -100,13 +100,12 @@ object MusicInfoManager:
             isMainController = true
 
             controller.metadata?.let {
-                Timber.e("New meta 22 ${MusicInfo.parse(it)}")
                 musicInfoStore.addInfo(MusicInfo.parse(it))
             }
         }
 
         private fun clearMainCallback() {
-            isMainController = false;
+            isMainController = false
             if (mainCallback === this) {
                 mainCallback = null
             }

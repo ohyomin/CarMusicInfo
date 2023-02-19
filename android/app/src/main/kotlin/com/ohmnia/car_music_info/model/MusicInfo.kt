@@ -2,6 +2,7 @@ package com.ohmnia.car_music_info.model
 
 import android.graphics.Bitmap
 import android.media.MediaMetadata
+import java.io.ByteArrayOutputStream
 
 class MusicInfo private constructor(
     val title: String,
@@ -18,6 +19,22 @@ class MusicInfo private constructor(
                         ?: getBitmap(MediaMetadata.METADATA_KEY_ART)
                 )
             }
+        }
+    }
+
+    fun toMap(): Map<String, Any?> {
+        return mutableMapOf<String, Any?>().apply {
+            put("title", title)
+            put("artist", artist)
+            put("albumArt", byteFromBitmap())
+        }
+    }
+
+    private fun byteFromBitmap(): ByteArray? {
+        return albumArt?.let { art ->
+            val stream = ByteArrayOutputStream()
+            art.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            stream.toByteArray()
         }
     }
 

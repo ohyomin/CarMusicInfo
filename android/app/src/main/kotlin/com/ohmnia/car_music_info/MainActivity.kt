@@ -4,15 +4,13 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
 import com.ohmnia.car_music_info.core.MusicInfoManager
+import com.ohmnia.car_music_info.methodchannel.MusicInfoStreamChannel
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
-import io.reactivex.disposables.Disposable
-import timber.log.Timber
-import java.nio.ByteBuffer
 
 class MainActivity: FlutterActivity() {
 
-    private var disposable: Disposable? = null
+    private val musicInfoStreamChannel = MusicInfoStreamChannel()
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -20,21 +18,9 @@ class MainActivity: FlutterActivity() {
         getPermission()
 
         MusicInfoManager.registerMediaSessionListener(this)
-
-        disposable = MusicInfoManager.subscribe{
-            Timber.d("New meta : $it")
-//            it.albumArt?.let { art ->
-//                val buffer = ByteBuffer.allocate(art.byteCount)
-//                art.copyPixelsFromBuffer(buffer)
-//                Timber.d("New meta : $it")
-//            }
-        }
+        musicInfoStreamChannel.init(flutterEngine)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        disposable?.dispose()
-    }
 
     private fun getPermission() {
         if (isPermissionGranted()) return
