@@ -6,14 +6,14 @@ final _borderRadius = BorderRadius.circular(30);
 
 class GlassBox extends StatelessWidget {
   const GlassBox({
-    required this.width,
-    required this.height,
     required this.child,
+    this.width,
+    this.height,
     Key? key,
   }) : super(key: key);
 
-  final double width;
-  final double height;
+  final double? width;
+  final double? height;
   final Widget child;
 
   @override

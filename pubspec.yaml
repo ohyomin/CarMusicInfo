@@ -40,6 +40,9 @@ dependencies:
   flutter_blurhash: ^0.7.0
   blurhash_dart: ^1.1.0
   image: ^4.0.15
+  marquee: ^2.2.3
+  auto_size_text: ^3.0.0
+  google_fonts: ^4.0.3
 
 dev_dependencies:
   flutter_test:
