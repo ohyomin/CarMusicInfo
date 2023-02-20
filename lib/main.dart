@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('assets/google_fonts/OFL.txt');
@@ -23,15 +22,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     return MaterialApp(
       title: 'Flutter Demo',
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
+          child: child!,
+        );
+      },
       theme: ThemeData(
-        appBarTheme: const AppBarTheme(
-          color: Colors.black,
-          foregroundColor: Colors.black,
-          systemOverlayStyle: SystemUiOverlayStyle.dark,
-        ),
         primarySwatch: Colors.blue,
         fontFamily: 'nanum',
       ),

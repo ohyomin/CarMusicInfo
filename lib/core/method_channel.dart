@@ -14,7 +14,7 @@ abstract class MethodChannelInterface {
 
   static MethodChannelInterface get() => _instance;
 
-  Stream<MusicInfo> get musicInfoStream;
+  Stream<Map<String, dynamic>> get musicInfoStream;
 
   void play();
   void pause();
@@ -30,23 +30,19 @@ class MusicInfoMethodChannel extends MethodChannelInterface {
   static const _musicInfoChannel = EventChannel(_musicInfoChannelName);
   static const _commandChannel = MethodChannel(_commandChannelName);
 
-  static Stream<MusicInfo>? _musicInfoStream;
+  static Stream<Map<String, dynamic>>? _musicInfoStream;
 
   @override
-  Stream<MusicInfo> get musicInfoStream {
+  Stream<Map<String, dynamic>> get musicInfoStream {
     if (_musicInfoStream != null) return _musicInfoStream!;
 
     _musicInfoStream = _musicInfoChannel
       .receiveBroadcastStream()
-      .transform<MusicInfo>(
-        StreamTransformer<dynamic, MusicInfo>.fromHandlers(
+      .transform(
+        StreamTransformer<dynamic, Map<String, dynamic>>.fromHandlers(
           handleData: (data, sink) {
-            if (data == null)  {
-              sink.add(MusicInfo.empty);
-            } else {
-              final map = Map<String, dynamic>.from(data);
-              sink.add(MusicInfo.fromMap(map));
-            }
+            final map = Map<String, dynamic>.from(data);
+            sink.add(map);
           },
         ),
       );

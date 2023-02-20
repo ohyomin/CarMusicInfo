@@ -1,6 +1,7 @@
 
-import 'package:car_music_info/core/method_channel.dart';
+import 'package:car_music_info/bloc/music_info_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 class RemoteControllerWidget extends StatefulWidget {
@@ -18,22 +19,15 @@ class RemoteControllerWidget extends StatefulWidget {
 class _RemoteControllerWidgetState extends State<RemoteControllerWidget>
     with TickerProviderStateMixin {
 
-  late final MethodChannelInterface toPlatform;
   late AnimationController _playPauseController;
 
   @override
   void initState() {
-    toPlatform = MethodChannelInterface.get();
     _playPauseController = AnimationController(
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
 
-    if (widget.isPlay) {
-      _playPauseController.reverse();
-    } else {
-      _playPauseController.forward();
-    }
     super.initState();
   }
 
@@ -45,28 +39,47 @@ class _RemoteControllerWidgetState extends State<RemoteControllerWidget>
 
   @override
   Widget build(BuildContext context) {
-    final commandChannel = MethodChannelInterface.get();
+
+    if (widget.isPlay) {
+      _playPauseController.forward();
+    } else {
+      _playPauseController.reverse();
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         _IconButton(
           iconData: Icons.fast_rewind_rounded,
-          callback: () => commandChannel.rewind(),
-        ),
-
-        _IconButton(
-          iconData: widget.isPlay ? Icons.pause_rounded : Icons.play_arrow_rounded,
           callback: () {
-            if (widget.isPlay) {
-              commandChannel.pause();
-            } else {
-              commandChannel.play();
-            }
-          }
+            context.read<MusicInfoBloc>().add(
+                const MusicCommand(Command.rewind));
+          },
+        ),
+        Material(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              Command command;
+              if (widget.isPlay) {
+                command = Command.pause;
+              } else {
+                command = Command.play;
+              }
+              context.read<MusicInfoBloc>().add(MusicCommand(command));
+            },
+            child: AnimatedIcon(
+              icon: AnimatedIcons.play_pause,
+              progress: _playPauseController,
+              size: 45,
+            ),
+          ),
         ),
         _IconButton(
           iconData: Icons.fast_forward_rounded,
-          callback: () => commandChannel.fastForward(),
+          callback: () => context.read<MusicInfoBloc>().add(
+              const MusicCommand(Command.fastForward)),
         ),
       ],
     );
