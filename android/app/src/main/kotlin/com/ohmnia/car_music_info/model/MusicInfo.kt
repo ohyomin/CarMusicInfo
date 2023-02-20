@@ -5,21 +5,36 @@ import android.media.MediaMetadata
 import java.io.ByteArrayOutputStream
 
 class MusicInfo private constructor(
-    val title: String,
-    val artist: String,
-    val albumArt: Bitmap?
+    val title: String? = null,
+    val artist: String? = null,
+    val albumArt: Bitmap? = null,
+    val isPlay: Boolean? = null
 ) {
     companion object {
-        fun parse(metadata: MediaMetadata): MusicInfo {
+        fun parse(metadata: MediaMetadata, isPlay: Boolean? = null): MusicInfo {
             return metadata.run {
                 MusicInfo(
                     title = getString(MediaMetadata.METADATA_KEY_TITLE) ?: "",
                     artist = getString(MediaMetadata.METADATA_KEY_ARTIST) ?: "",
                     albumArt = getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
-                        ?: getBitmap(MediaMetadata.METADATA_KEY_ART)
+                        ?: getBitmap(MediaMetadata.METADATA_KEY_ART),
+                    isPlay = isPlay
                 )
             }
         }
+
+        fun parse(isPlay: Boolean): MusicInfo {
+            return MusicInfo(isPlay = isPlay)
+        }
+    }
+
+    fun reduce(other: MusicInfo): MusicInfo {
+        return MusicInfo(
+            title = title ?: other.title,
+            artist = artist ?: other.artist,
+            albumArt = albumArt ?: other.albumArt,
+            isPlay = isPlay ?: other.isPlay
+        )
     }
 
     fun toMap(): Map<String, Any?> {
@@ -27,6 +42,7 @@ class MusicInfo private constructor(
             put("title", title)
             put("artist", artist)
             put("albumArt", byteFromBitmap())
+            put("isPlay", if (isPlay == true) 1 else 0)
         }
     }
 
@@ -42,6 +58,7 @@ class MusicInfo private constructor(
         return other is MusicInfo
                 && other.title == title
                 && other.artist == artist
+                && other.isPlay == isPlay
                 && other.getBitmapSize() == getBitmapSize()
     }
 
@@ -50,11 +67,12 @@ class MusicInfo private constructor(
     override fun hashCode(): Int {
         var result = title.hashCode()
         result = 31 * result + artist.hashCode()
+        result = 31 * result + isPlay.hashCode()
         result = 31 * result + (albumArt?.byteCount ?: 0)
         return result
     }
 
     override fun toString(): String {
-        return "title:$title, artist:$artist, albumArt:${getBitmapSize()}"
+        return "title:$title, artist:$artist, albumArt:${getBitmapSize()}, isPlay: $isPlay"
     }
 }

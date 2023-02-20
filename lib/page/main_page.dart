@@ -26,11 +26,13 @@ class _MainPageState extends State<MainPage> {
       setState(() {
         title = event.title;
         artist = event.artist;
+        isPlay = event.isPlay;
         if (event.albumArt != null && event.albumArt!.isNotEmpty) {
           buffer = event.albumArt;
           final blurHash = encoder.BlurHash.encode(
               img.decodeImage(buffer!)!, numCompX: 5, numCompY: 5);
           hash = blurHash.hash;
+          print('hash $hash');
         }
       });
     });
@@ -42,6 +44,7 @@ class _MainPageState extends State<MainPage> {
   String? hash = "L5H2EC=PM+yV0g-mq.wG9c010J}I";
   String title = '';
   String artist = '';
+  bool isPlay = false;
 
   @override
   Widget build(BuildContext context) {
@@ -68,39 +71,43 @@ class _MainPageState extends State<MainPage> {
                 children: [
                   GlassBox(
                     width: 300,
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 1000),
-                      child: Column(
-                        key: ValueKey(hash),
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                            height: 120,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                          height: 120,
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 1000),
                             child: TitleInfoWidget(
+                              key: ValueKey(title),
                               title: title,
                               artist: artist,
                             ),
                           ),
-                          Flexible(
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(
-                                maxWidth: 230,
-                                maxHeight: 230
+                        ),
+                        Flexible(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              maxWidth: 230,
+                              maxHeight: 230
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Color(0x54000000),
+                                    spreadRadius:4,
+                                    blurRadius: 20,
+                                  ),
+                                ],
                               ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Color(0x54000000),
-                                      spreadRadius:4,
-                                      blurRadius: 20,
-                                    ),
-                                  ],
-                                ),
+                              child: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 1000),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
+                                  key: ValueKey(hash),
                                   child: AspectRatio(
                                     aspectRatio: 1,
                                     child: _getAlbumArt(),
@@ -109,13 +116,13 @@ class _MainPageState extends State<MainPage> {
                               ),
                             ),
                           ),
-                          Container(
-                            height: 100,
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: const RemoteControllerWidget(),
-                          ),
-                        ],
-                      ),
+                        ),
+                        Container(
+                          height: 100,
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: RemoteControllerWidget(isPlay: isPlay),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -148,6 +155,7 @@ class _MainPageState extends State<MainPage> {
       errorBuilder: (context, error, stackTrace) {
         return const SizedBox();
       },
+      key: ValueKey(hash),
     );
   }
 }

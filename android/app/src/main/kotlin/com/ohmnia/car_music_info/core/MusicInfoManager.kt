@@ -37,6 +37,7 @@ object MusicInfoManager:
 
     fun registerMediaSessionListener(context: Context) {
         if (isInit) return
+        isInit = true
 
         handler = Handler(Looper.getMainLooper())
 
@@ -49,8 +50,6 @@ object MusicInfoManager:
         registerMediaControllerCallback(controllers)
 
         mediaSessionManager.addOnActiveSessionsChangedListener(this, componentName, handler)
-
-        isInit = true
     }
 
 
@@ -79,6 +78,14 @@ object MusicInfoManager:
         registerMediaControllerCallback(controllers)
     }
 
+    fun MediaController.isActiveState(): Boolean {
+        return when (playbackState?.state) {
+            PlaybackState.STATE_PLAYING,
+            PlaybackState.STATE_BUFFERING -> true
+            else -> false
+        }
+    }
+
     class SessionCallback(private val controller: MediaController):
         MediaController.Callback() {
 
@@ -90,6 +97,12 @@ object MusicInfoManager:
             if (state?.state == PlaybackState.STATE_PLAYING) {
                 setMainCallback()
             }
+
+            if (!isMainController) return
+
+            if (state == null || state.state == PlaybackState.STATE_NONE) return
+
+            musicInfoStore.addInfo(MusicInfo.parse(controller.isActiveState()))
         }
 
         fun setMainCallback() {
@@ -100,7 +113,8 @@ object MusicInfoManager:
             isMainController = true
 
             controller.metadata?.let {
-                musicInfoStore.addInfo(MusicInfo.parse(it))
+                Timber.d("register $it")
+                musicInfoStore.addInfo(MusicInfo.parse(it, controller.isActiveState()))
             }
         }
 
@@ -133,7 +147,6 @@ object MusicInfoManager:
         fun play() = controller.transportControls.play()
         fun pause() = controller.transportControls.pause()
         fun fastForward() {
-            Timber.d("hmhm fast fora ${controller.packageName}")
             controller.transportControls.skipToNext()
         }
         fun rewind() = controller.transportControls.skipToPrevious()
