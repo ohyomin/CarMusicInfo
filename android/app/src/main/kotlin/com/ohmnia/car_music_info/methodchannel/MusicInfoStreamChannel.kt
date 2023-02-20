@@ -1,13 +1,19 @@
 package com.ohmnia.car_music_info.methodchannel
 
 import com.ohmnia.car_music_info.core.Constants
-import com.ohmnia.car_music_info.core.MusicInfoManager
+import com.ohmnia.car_music_info.core.MusicInfoStore
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.reactivex.disposables.Disposable
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class MusicInfoStreamChannel: EventChannel.StreamHandler {
+@Singleton
+class MusicInfoStreamChannel @Inject constructor(
+    private val musicInfoStore: MusicInfoStore
+):
+    EventChannel.StreamHandler {
 
     private var eventSink: EventChannel.EventSink? = null
     private var disposable: Disposable? = null
@@ -23,7 +29,7 @@ class MusicInfoStreamChannel: EventChannel.StreamHandler {
         if (events == null) return
 
         eventSink = events
-        disposable = MusicInfoManager.subscribe {
+        disposable = musicInfoStore.store.subscribe {
             Timber.d("New meta $it")
             eventSink?.success(it.toMap())
         }

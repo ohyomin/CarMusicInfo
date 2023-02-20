@@ -9,14 +9,19 @@ import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import android.os.Handler
 import android.os.Looper
-import com.ohmnia.car_music_info.model.MusicInfo
+import com.ohmnia.car_music_info.intent.IntentFactory
+import com.ohmnia.car_music_info.model.InfoChangedEvent.MetaChangedEvent
+import com.ohmnia.car_music_info.model.InfoChangedEvent.PlayStateEvent
 import com.ohmnia.car_music_info.service.MediaNotificationService
-import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
-object MusicInfoManager:
+@Singleton
+class MusicInfoManager @Inject constructor(
+    private val intentFactory: IntentFactory
+) :
     MediaSessionManager.OnActiveSessionsChangedListener {
 
     private val callbacks = mutableListOf<SessionCallback>()
@@ -27,29 +32,27 @@ object MusicInfoManager:
 
     private lateinit var handler: Handler
 
-    val musicInfoStore = MusicInfoStore()
-
-    fun subscribe(onNext: Consumer<MusicInfo>): Disposable =
-        musicInfoStore.store.subscribe(onNext)
-
     private fun List<SessionCallback>.isNewController(controller: MediaController) =
         none{ it.sameToken(controller.sessionToken) }
 
     fun registerMediaSessionListener(context: Context) {
-        if (isInit) return
-        isInit = true
+        synchronized(this) {
+            if (isInit) return
 
-        handler = Handler(Looper.getMainLooper())
+            handler = Handler(Looper.getMainLooper())
 
-        val mediaSessionManager = context.getSystemService(Context.MEDIA_SESSION_SERVICE)
-                as MediaSessionManager
+            val mediaSessionManager = context.getSystemService(Context.MEDIA_SESSION_SERVICE)
+                    as MediaSessionManager
 
-        val componentName = ComponentName(context, MediaNotificationService::class.java)
+            val componentName = ComponentName(context, MediaNotificationService::class.java)
 
-        val controllers = mediaSessionManager.getActiveSessions(componentName)
-        registerMediaControllerCallback(controllers)
+            val controllers = mediaSessionManager.getActiveSessions(componentName)
+            registerMediaControllerCallback(controllers)
 
-        mediaSessionManager.addOnActiveSessionsChangedListener(this, componentName, handler)
+            mediaSessionManager.addOnActiveSessionsChangedListener(this, componentName, handler)
+
+            isInit = true
+        }
     }
 
 
@@ -86,7 +89,7 @@ object MusicInfoManager:
         }
     }
 
-    class SessionCallback(private val controller: MediaController):
+    inner class SessionCallback(private val controller: MediaController):
         MediaController.Callback() {
 
         private var isMainController = false
@@ -99,10 +102,10 @@ object MusicInfoManager:
             }
 
             if (!isMainController) return
-
             if (state == null || state.state == PlaybackState.STATE_NONE) return
 
-            musicInfoStore.addInfo(MusicInfo.parse(controller.isActiveState()))
+            val event = PlayStateEvent(controller.isActiveState())
+            intentFactory.process(event)
         }
 
         fun setMainCallback() {
@@ -113,9 +116,10 @@ object MusicInfoManager:
             isMainController = true
 
             controller.metadata?.let {
-                Timber.d("register $it")
-                musicInfoStore.addInfo(MusicInfo.parse(it, controller.isActiveState()))
+                val event = MetaChangedEvent(it)
+                intentFactory.process(event)
             }
+            intentFactory.process(PlayStateEvent(controller.isActiveState()))
         }
 
         private fun clearMainCallback() {
@@ -130,9 +134,7 @@ object MusicInfoManager:
 
             if (!isMainController || metadata == null) return
 
-            val info = MusicInfo.parse(metadata)
-
-            musicInfoStore.addInfo(info)
+            intentFactory.process(MetaChangedEvent(metadata))
         }
 
         override fun onSessionDestroyed() {
@@ -146,9 +148,7 @@ object MusicInfoManager:
 
         fun play() = controller.transportControls.play()
         fun pause() = controller.transportControls.pause()
-        fun fastForward() {
-            controller.transportControls.skipToNext()
-        }
+        fun fastForward() = controller.transportControls.skipToNext()
         fun rewind() = controller.transportControls.skipToPrevious()
     }
 }

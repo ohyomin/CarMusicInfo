@@ -1,23 +1,27 @@
 package com.ohmnia.car_music_info.core
 
+import com.ohmnia.car_music_info.intent.Intent
 import com.ohmnia.car_music_info.model.MusicInfo
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
-class MusicInfoStore {
-    private val subject = BehaviorSubject.create<MusicInfo>()
+@Singleton
+class MusicInfoStore @Inject constructor() {
+    private val intents = BehaviorSubject.create<Intent<MusicInfo>>()
 
-    val store: Observable<MusicInfo> = subject
+    val store: Observable<MusicInfo> = intents
         .observeOn(AndroidSchedulers.mainThread())
-        .scan { old, new ->
-            val result = new.reduce(old)
-            //Timber.d("old : $old, new : $new, result : $result")
-            result
-        }
+        .scan(MusicInfo.empty) { oldState, intent -> intent.reduce(oldState) }
         .distinctUntilChanged()
 
-    fun addInfo(info: MusicInfo) = subject.onNext(info)
+    fun process(intent: Intent<MusicInfo>) = intents.onNext(intent)
+
+    private val internalDisposable = store.subscribe(::internalLogger)
+
+    private fun internalLogger(state: MusicInfo) = Timber.i("State: $state")
 }
