@@ -71,9 +71,9 @@ flutter:
     - assets/google_fonts/
 
   fonts:
-    - family: nanum
+    - family: Dongle
       fonts:
-        - asset: assets/google_fonts/NanumPenScript-Regular.ttf
+        - asset: assets/google_fonts/Dongle-Regular.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:

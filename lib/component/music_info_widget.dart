@@ -7,8 +7,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 
 import '../core/constants.dart';
 
-const _titleSize = 25.0;
-const _artistSize = 22.0;
+const _titleSize = 33.0;
+const _artistSize = 27.0;
 
 class MetaInfoWidget extends StatelessWidget {
   const MetaInfoWidget({
@@ -49,7 +49,7 @@ class MetaInfoWidget extends StatelessWidget {
           style: artistStyle,
           text: artist,
         ),
-        SizedBox(height: height * 0.02),
+        SizedBox(height: height * 0.01),
         Flexible(
           child: ConstrainedBox(
             constraints: const BoxConstraints(
@@ -70,7 +70,8 @@ class MetaInfoWidget extends StatelessWidget {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Positioned.fill(
+                  Align(
+                    alignment: Alignment.center,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: AspectRatio(
@@ -109,7 +110,7 @@ class MetaInfoWidget extends StatelessWidget {
     return Image.memory(
       Uint8List.fromList(albumArt),
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) {
+      errorBuilder: (_, __, ___) {
         return const BlurHash(hash: Constants.defaultBlurHash);
       },
     );
@@ -131,7 +132,7 @@ class _MarqueeText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: (fontSize + 18.0) * MediaQuery.of(context).textScaleFactor,
+      height: (fontSize + 15.0) * MediaQuery.of(context).textScaleFactor,
       child: AutoSizeText(
         text,
         textAlign: TextAlign.center,

@@ -11,7 +11,7 @@ void main() {
     final license = await rootBundle.loadString('assets/google_fonts/OFL.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
-  //GoogleFonts.config.allowRuntimeFetching = false;
+  GoogleFonts.config.allowRuntimeFetching = false;
 
   runApp(const MyApp());
 }
@@ -32,8 +32,8 @@ class MyApp extends StatelessWidget {
       },
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        //fontFamily: 'nanum',
-        textTheme: GoogleFonts.juaTextTheme(),
+        fontFamily: 'Dongle',
+        //textTheme: GoogleFonts.dongleTextTheme(),
       ),
       home: const MainPage(),
     );

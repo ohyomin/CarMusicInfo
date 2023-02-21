@@ -14,34 +14,32 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => MusicInfoBloc(),
-      child: Scaffold(
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          color: Colors.black,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              const BackgroundBlur(),
-              Padding(
-                padding: const EdgeInsets.all(15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: 400,
-                          maxHeight: 600,
-                        ),
-                        child: const MusicInfoBox(),
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: Colors.black,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            const BackgroundBlur(),
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: 400,
+                        maxHeight: 600,
                       ),
+                      child: const MusicInfoBox(),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -61,12 +59,28 @@ class BackgroundBlur extends StatelessWidget {
       builder: (context, state) {
         return ClipRRect(
           borderRadius: BorderRadius.circular(20),
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 1000),
-            child: BlurHash(
-              hash: state.albumArtHash,
-              key: ValueKey(state.albumArtHash),
-            ),
+          child: Stack(
+            children: [
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 1000),
+                child: BlurHash(
+                  hash: state.albumArtHash,
+                  key: ValueKey(state.albumArtHash),
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      Colors.black.withOpacity(0.6),
+                      Colors.black.withOpacity(0.2),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       },
