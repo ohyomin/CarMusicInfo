@@ -1,14 +1,16 @@
 import 'dart:typed_data';
 
+import 'package:car_music_info/bloc/music_info_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:marquee/marquee.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 import '../core/constants.dart';
 
-const _titleSize = 33.0;
-const _artistSize = 27.0;
+const _titleSize = 30.0;
+const _artistSize = 26.0;
 
 class MetaInfoWidget extends StatelessWidget {
   const MetaInfoWidget({
@@ -36,6 +38,8 @@ class MetaInfoWidget extends StatelessWidget {
 
     final height = MediaQuery.of(context).size.height;
 
+    final musicInfoBloc = context.read<MusicInfoBloc>();
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -53,8 +57,8 @@ class MetaInfoWidget extends StatelessWidget {
         Flexible(
           child: ConstrainedBox(
             constraints: const BoxConstraints(
-              maxWidth: 200,
-              maxHeight: 200,
+              maxWidth: 180,
+              maxHeight: 180,
             ),
             child: Container(
               decoration: BoxDecoration(
@@ -90,6 +94,7 @@ class MetaInfoWidget extends StatelessWidget {
                       child: InkWell(
                         borderRadius: BorderRadius.circular(10),
                         onTap: () {},
+                        focusNode: musicInfoBloc.albumArtFocusNode,
                       ),
                     ),
                   ),

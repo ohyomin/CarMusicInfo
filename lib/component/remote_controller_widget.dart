@@ -46,7 +46,7 @@ class _RemoteControllerWidgetState extends State<RemoteControllerWidget>
       _playPauseController.reverse();
     }
 
-    final musicInfoBloc = BlocProvider.of<MusicInfoBloc>(context);
+    final musicInfoBloc = context.read<MusicInfoBloc>();
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -54,10 +54,12 @@ class _RemoteControllerWidgetState extends State<RemoteControllerWidget>
         _IconButton(
           iconData: Icons.fast_rewind_rounded,
           callback: () => musicInfoBloc.add(MusicCommand.rewind),
+          focusNode: musicInfoBloc.rewindButtonFocusNode,
         ),
         Material(
           color: Colors.transparent,
           child: InkWell(
+            focusNode: musicInfoBloc.playButtonFocusNode,
             borderRadius: BorderRadius.circular(10),
             onTap: () {
               if (widget.isPlay) {
@@ -79,6 +81,7 @@ class _RemoteControllerWidgetState extends State<RemoteControllerWidget>
         _IconButton(
           iconData: Icons.fast_forward_rounded,
           callback: () => musicInfoBloc.add(MusicCommand.fastForward),
+          focusNode: musicInfoBloc.fastForwardFocusNode,
         ),
       ],
     );
@@ -89,11 +92,13 @@ class _IconButton extends StatelessWidget {
   const _IconButton({
     required this.iconData,
     required this.callback,
+    required this.focusNode,
     Key? key,
   }) : super(key: key);
 
   final IconData iconData;
   final VoidCallback callback;
+  final FocusNode focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +107,7 @@ class _IconButton extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
         onTap: callback,
+        focusNode: focusNode,
         child: Icon(
           iconData,
           color: Colors.black,

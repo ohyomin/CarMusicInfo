@@ -1,5 +1,6 @@
 
 import 'package:car_music_info/bloc/music_info_bloc.dart';
+import 'package:car_music_info/component/glass_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
@@ -12,8 +13,9 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => MusicInfoBloc(),
+    return FocusScope(
+      node: context.read<MusicInfoBloc>().globalFocusNode,
+      autofocus: true,
       child: Container(
         width: double.infinity,
         height: double.infinity,
@@ -25,7 +27,7 @@ class MainPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(15),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Flexible(
                     child: ConstrainedBox(
@@ -34,6 +36,33 @@ class MainPage extends StatelessWidget {
                         maxHeight: 600,
                       ),
                       child: const MusicInfoBox(),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Flexible(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              maxWidth: 400,
+                              maxHeight: 600,
+                            ),
+                            child: const GlassBox(child: SizedBox()),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Flexible(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              maxWidth: 400,
+                              maxHeight: 600,
+                            ),
+                            child: const GlassBox(child: SizedBox()),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

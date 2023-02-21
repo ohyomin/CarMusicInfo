@@ -1,9 +1,9 @@
-import 'dart:typed_data';
 import 'package:blurhash_dart/blurhash_dart.dart';
 
 import 'package:bloc/bloc.dart';
 import 'package:car_music_info/core/constants.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 
 import '../core/method_channel.dart';
@@ -17,7 +17,90 @@ class MusicInfoBloc extends Bloc<MusicInfoEvent, MusicInfoState> {
     on<MusicCommand>(_onMusicCommand);
 
     _listenMusicInfoStream();
+
   }
+
+  KeyEventResult _keyHandler(
+    FocusNode node,
+    RawKeyEvent event,
+    VoidCallback block,
+  ) {
+    if (event.isKeyPressed(LogicalKeyboardKey.enter)
+        || event.isKeyPressed(LogicalKeyboardKey.select)) {
+      block.call();
+      return KeyEventResult.handled;
+    }
+
+    if (event.isKeyPressed(LogicalKeyboardKey.mediaTrackNext) ||
+        event.isKeyPressed(LogicalKeyboardKey.mediaFastForward)) {
+      add(MusicCommand.fastForward);
+      return KeyEventResult.handled;
+    }
+
+    if (event.isKeyPressed(LogicalKeyboardKey.mediaTrackPrevious) ||
+        event.isKeyPressed(LogicalKeyboardKey.mediaRewind)) {
+      add(MusicCommand.rewind);
+      return KeyEventResult.handled;
+    }
+
+    if (event.isKeyPressed(LogicalKeyboardKey.mediaPlay) ||
+        event.isKeyPressed(LogicalKeyboardKey.play)) {
+      add(MusicCommand.play);
+      return KeyEventResult.handled;
+    }
+
+    if (event.isKeyPressed(LogicalKeyboardKey.mediaPause) ||
+      event.isKeyPressed(LogicalKeyboardKey.pause)) {
+      add(MusicCommand.pause);
+      return KeyEventResult.handled;
+    }
+
+    if (event.isKeyPressed(LogicalKeyboardKey.mediaPlayPause)) {
+      add(state.isPlay ? MusicCommand.pause : MusicCommand.play);
+      return KeyEventResult.handled;
+    }
+
+    return KeyEventResult.ignored;
+  }
+
+  late final FocusScopeNode globalFocusNode = FocusScopeNode(
+    onKey: (node, event) {
+      return _keyHandler(node, event, () {
+      });
+    },
+  );
+
+  late final FocusNode rewindButtonFocusNode = FocusNode(
+    onKey: (node, event) {
+      return _keyHandler(node, event, () {
+        add(MusicCommand.rewind);
+      });
+    },
+  );
+
+  late final FocusNode playButtonFocusNode = FocusNode(
+    onKey: (node, event) {
+      return _keyHandler(node, event, () {
+        add(state.isPlay ? MusicCommand.pause : MusicCommand.play);
+      });
+    },
+  );
+
+  late final FocusNode fastForwardFocusNode = FocusNode(
+    onKey: (node, event) {
+      return _keyHandler(node, event, () {
+        add(MusicCommand.fastForward);
+      });
+    },
+  );
+
+  late final FocusNode albumArtFocusNode = FocusNode(
+    onKey: (node, event) {
+      return _keyHandler(node, event, () {
+        // TODO app launch
+      });
+    },
+  );
 
   final MethodChannelInterface methodChannel = MethodChannelInterface.get();
 

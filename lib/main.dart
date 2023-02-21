@@ -2,7 +2,10 @@ import 'package:car_music_info/page/main_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'bloc/music_info_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +38,10 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Dongle',
         //textTheme: GoogleFonts.dongleTextTheme(),
       ),
-      home: const MainPage(),
+      home: BlocProvider(
+        create: (context) => MusicInfoBloc(),
+        child: const MainPage(),
+      ),
     );
   }
 }
