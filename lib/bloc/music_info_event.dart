@@ -21,4 +21,9 @@ class MusicCommand extends MusicInfoEvent {
   const MusicCommand(this.command);
 
   final Command command;
+
+  static const play = MusicCommand(Command.play);
+  static const pause = MusicCommand(Command.pause);
+  static const rewind = MusicCommand(Command.rewind);
+  static const fastForward = MusicCommand(Command.fastForward);
 }

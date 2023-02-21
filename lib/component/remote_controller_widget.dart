@@ -46,40 +46,39 @@ class _RemoteControllerWidgetState extends State<RemoteControllerWidget>
       _playPauseController.reverse();
     }
 
+    final musicInfoBloc = BlocProvider.of<MusicInfoBloc>(context);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         _IconButton(
           iconData: Icons.fast_rewind_rounded,
-          callback: () {
-            context.read<MusicInfoBloc>().add(
-                const MusicCommand(Command.rewind));
-          },
+          callback: () => musicInfoBloc.add(MusicCommand.rewind),
         ),
         Material(
-          borderRadius: BorderRadius.circular(20),
           color: Colors.transparent,
           child: InkWell(
+            borderRadius: BorderRadius.circular(10),
             onTap: () {
-              Command command;
               if (widget.isPlay) {
-                command = Command.pause;
+                musicInfoBloc.add(MusicCommand.pause);
               } else {
-                command = Command.play;
+                musicInfoBloc.add(MusicCommand.play);
               }
-              context.read<MusicInfoBloc>().add(MusicCommand(command));
             },
-            child: AnimatedIcon(
-              icon: AnimatedIcons.play_pause,
-              progress: _playPauseController,
-              size: 45,
+            child: Padding(
+              padding: const EdgeInsets.all(3.0),
+              child: AnimatedIcon(
+                icon: AnimatedIcons.play_pause,
+                progress: _playPauseController,
+                size: 45,
+              ),
             ),
           ),
         ),
         _IconButton(
           iconData: Icons.fast_forward_rounded,
-          callback: () => context.read<MusicInfoBloc>().add(
-              const MusicCommand(Command.fastForward)),
+          callback: () => musicInfoBloc.add(MusicCommand.fastForward),
         ),
       ],
     );
@@ -99,14 +98,13 @@ class _IconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      borderRadius: BorderRadius.circular(20),
       color: Colors.transparent,
-      child: IconButton(
-        onPressed: callback,
-        padding: EdgeInsets.zero,
-        icon:Icon(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: callback,
+        child: Icon(
           iconData,
-          color: Colors.black.withOpacity(0.8),
+          color: Colors.black,
           size: 50,
         ),
       ),

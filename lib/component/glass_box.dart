@@ -19,8 +19,8 @@ class GlassBox extends StatelessWidget {
     return ClipRRect(
       borderRadius: _borderRadius,
       child: SizedBox(
-        width: width,
-        height: height,
+        width: width ?? double.infinity,
+        height: height ?? double.infinity,
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(color: Colors.white.withOpacity(0.3)),
