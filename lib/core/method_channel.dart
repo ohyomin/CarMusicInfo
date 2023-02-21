@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-import '../model/music_info.dart';
-
 abstract class MethodChannelInterface {
 
   static MethodChannelInterface _instance = MusicInfoMethodChannel();

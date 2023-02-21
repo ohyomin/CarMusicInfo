@@ -1,13 +1,10 @@
-import 'dart:typed_data';
 
 import 'package:car_music_info/component/remote_controller_widget.dart';
 import 'package:car_music_info/component/music_info_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_blurhash/flutter_blurhash.dart';
 
 import '../bloc/music_info_bloc.dart';
-import '../core/constants.dart';
 import 'glass_box.dart';
 
 class MusicInfoBox extends StatelessWidget {
