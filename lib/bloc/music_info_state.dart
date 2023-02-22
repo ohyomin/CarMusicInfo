@@ -9,6 +9,8 @@ class MusicInfoState {
     required this.albumArt,
     required this.isPlay,
     required this.albumArtHash,
+    this.extra = '',
+    this.isGrantPermission = false,
   });
 
   final String title;
@@ -16,6 +18,8 @@ class MusicInfoState {
   final List<int> albumArt;
   final bool isPlay;
   final String albumArtHash;
+  final String extra;
+  final bool isGrantPermission;
 
   MusicInfoState copyWith({
     String? title,
@@ -23,6 +27,8 @@ class MusicInfoState {
     List<int>? albumArt,
     bool? isPlay,
     String? albumArtHash,
+    String? extra,
+    bool? isPermissionGranted,
   }) {
     return MusicInfoState(
       title: title ?? this.title,
@@ -30,6 +36,8 @@ class MusicInfoState {
       albumArt: albumArt ?? this.albumArt,
       isPlay: isPlay ?? this.isPlay,
       albumArtHash: albumArtHash ?? this.albumArtHash,
+      extra: extra ?? this.extra,
+      isGrantPermission: isPermissionGranted ?? this.isGrantPermission,
     );
   }
 
@@ -39,21 +47,33 @@ class MusicInfoState {
       && other.title == title
       && other.artist == artist
       && other.albumArtHash == albumArtHash
-      && other.isPlay == isPlay;
+      && other.isPlay == isPlay
+      && other.extra == extra
+      && other.isGrantPermission == isGrantPermission;
   }
 
   @override
   int get hashCode => (
-      title.hashCode + artist.hashCode
-          + isPlay.hashCode + albumArtHash.hashCode).toInt();
+      title.hashCode +
+      artist.hashCode +
+      isPlay.hashCode +
+      albumArtHash.hashCode +
+      isGrantPermission.hashCode +
+      extra.hashCode
+  ).toInt();
 
-  static const MusicInfoState initState = MusicInfoState(
+  static const initState = MusicInfoState(
       title: '',
       artist: '',
       albumArt: <int>[],
       isPlay: false,
       albumArtHash: Constants.defaultBlurHash,
   );
+
+  @override
+  String toString() {
+    return 'title:$title, permission: $isGrantPermission';
+  }
 }
 
 

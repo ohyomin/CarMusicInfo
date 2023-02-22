@@ -27,3 +27,15 @@ class MusicCommand extends MusicInfoEvent {
   static const rewind = MusicCommand(Command.rewind);
   static const fastForward = MusicCommand(Command.fastForward);
 }
+
+class RequestPermission extends MusicInfoEvent {
+  const RequestPermission();
+}
+
+class CheckPermission extends MusicInfoEvent {
+  const CheckPermission();
+}
+
+class RegisterListener extends MusicInfoEvent {
+  const RegisterListener();
+}

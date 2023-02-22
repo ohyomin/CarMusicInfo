@@ -15,9 +15,19 @@ class MusicInfoBloc extends Bloc<MusicInfoEvent, MusicInfoState> {
   MusicInfoBloc() : super(MusicInfoState.initState) {
     on<MetaChanged>(_onMetaChanged);
     on<MusicCommand>(_onMusicCommand);
+    on<CheckPermission>((event, emit) async {
+      final granted = await methodChannel.isPermissionGranted();
+      if (granted) methodChannel.registerListener();
+      emit(state.copyWith(isPermissionGranted: granted));
+    });
+    on<RequestPermission>((event, emit) async {
+      final result = await methodChannel.requestPermission();
+      if (result) methodChannel.registerListener();
+      emit(state.copyWith(isPermissionGranted: result));
+    });
 
+    add(const CheckPermission());
     _listenMusicInfoStream();
-
   }
 
   KeyEventResult _keyHandler(
@@ -25,8 +35,10 @@ class MusicInfoBloc extends Bloc<MusicInfoEvent, MusicInfoState> {
     RawKeyEvent event,
     VoidCallback block,
   ) {
+    emit(state.copyWith(extra: event.logicalKey.keyLabel));
     if (event.isKeyPressed(LogicalKeyboardKey.enter)
-        || event.isKeyPressed(LogicalKeyboardKey.select)) {
+        || event.isKeyPressed(LogicalKeyboardKey.select)
+        || event.isKeyPressed(LogicalKeyboardKey.gameButtonSelect)) {
       block.call();
       return KeyEventResult.handled;
     }

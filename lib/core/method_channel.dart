@@ -18,12 +18,15 @@ abstract class MethodChannelInterface {
   void pause();
   void rewind();
   void fastForward();
+  Future<bool> requestPermission();
+  Future<bool> isPermissionGranted();
+  void registerListener();
 }
 
 class MusicInfoMethodChannel extends MethodChannelInterface {
 
-  static const String _musicInfoChannelName = "com.ohmnia.musicinfo";
-  static const String _commandChannelName = "com.ohmnia.command";
+  static const String _musicInfoChannelName = 'com.ohmnia.musicinfo';
+  static const String _commandChannelName = 'com.ohmnia.command';
 
   static const _musicInfoChannel = EventChannel(_musicInfoChannelName);
   static const _commandChannel = MethodChannel(_commandChannelName);
@@ -50,21 +53,36 @@ class MusicInfoMethodChannel extends MethodChannelInterface {
 
   @override
   void fastForward() {
-    _commandChannel.invokeMethod("fastForward");
+    _commandChannel.invokeMethod('fastForward');
   }
 
   @override
   void pause() {
-    _commandChannel.invokeMethod("pause");
+    _commandChannel.invokeMethod('pause');
   }
 
   @override
   void play() {
-    _commandChannel.invokeMethod("play");
+    _commandChannel.invokeMethod('play');
   }
 
   @override
   void rewind() {
-    _commandChannel.invokeMethod("rewind");
+    _commandChannel.invokeMethod('rewind');
+  }
+
+  @override
+  Future<bool> isPermissionGranted() async {
+    return await _commandChannel.invokeMethod<bool>('isPermissionGranted') ?? false;
+  }
+
+  @override
+  Future<bool> requestPermission() async {
+    return await _commandChannel.invokeMethod<bool>('requestPermission') ?? false;
+  }
+
+  @override
+  void registerListener() {
+    _commandChannel.invokeMethod('registerListener');
   }
 }

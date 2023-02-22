@@ -36,7 +36,15 @@ class MusicInfoBox extends StatelessWidget {
               );
             },
           ),
-          BlocBuilder<MusicInfoBloc, MusicInfoState>(
+          BlocConsumer<MusicInfoBloc, MusicInfoState>(
+            listener: (context, state) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.extra),
+                  duration: const Duration(seconds: 1),
+                ),
+              );
+            },
             buildWhen: (prev, cur) => prev.isPlay != cur.isPlay,
             builder: (context, state) {
               return Container(

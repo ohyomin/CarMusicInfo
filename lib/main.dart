@@ -1,9 +1,9 @@
+import 'package:car_music_info/bloc/bloc_observer.dart';
 import 'package:car_music_info/page/main_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'bloc/music_info_bloc.dart';
 
@@ -14,8 +14,8 @@ void main() {
     final license = await rootBundle.loadString('assets/google_fonts/OFL.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
-  GoogleFonts.config.allowRuntimeFetching = false;
 
+  Bloc.observer = const MusicInfoBlocObserver();
   runApp(const MyApp());
 }
 
@@ -25,22 +25,28 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      builder: (context, child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
-          child: child!,
-        );
-      },
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        fontFamily: 'Dongle',
-        //textTheme: GoogleFonts.dongleTextTheme(),
-      ),
-      home: BlocProvider(
-        create: (context) => MusicInfoBloc(),
-        child: const MainPage(),
+    return BlocProvider(
+      create: (context) => MusicInfoBloc(),
+      child: MaterialApp(
+        title: '',
+        builder: (context, child) {
+          return BlocListener<MusicInfoBloc, MusicInfoState> (
+            listenWhen: (_, cur) => !cur.isGrantPermission,
+            listener: (context, state) {
+              final bloc = context.read<MusicInfoBloc>();
+              bloc.add(const RequestPermission());
+            },
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
+              child: child!,
+            ),
+          );
+        },
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          fontFamily: 'Dongle',
+        ),
+        home: const MainPage(),
       ),
     );
   }

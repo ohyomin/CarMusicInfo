@@ -1,5 +1,6 @@
 package com.ohmnia.car_music_info
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -15,10 +16,14 @@ import com.ohmnia.car_music_info.methodchannel.MusicInfoStreamChannel
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.common.MethodChannel.Result
 import timber.log.Timber
 import javax.inject.Inject
 
 class MainActivity: FlutterActivity() {
+
+    private val pendingResult = mutableMapOf<Int, Result>()
+    private var requestCodeBase = 1000;
 
     @Inject
     lateinit var musicInfoStreamChannel: MusicInfoStreamChannel
@@ -62,8 +67,6 @@ class MainActivity: FlutterActivity() {
 
         musicInfoStreamChannel.init(flutterEngine)
 
-        musicInfoManager.registerMediaSessionListener(this)
-
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, Constants.COMMAND_CHANNEL)
             .setMethodCallHandler { call, result ->
                 Timber.d("Command ${call.method}")
@@ -73,9 +76,12 @@ class MainActivity: FlutterActivity() {
                     "rewind" -> musicInfoManager.rewind()
                     "fastForward" -> musicInfoManager.fastForward()
                     "registerListener" -> musicInfoManager.registerMediaSessionListener(this)
-                    "getPermission" -> getPermission()
                     "isPermissionGranted" -> {
                         result.success(isPermissionGranted())
+                        return@setMethodCallHandler
+                    }
+                    "requestPermission" -> {
+                        getPermission(result)
                         return@setMethodCallHandler
                     }
                 }
@@ -84,12 +90,23 @@ class MainActivity: FlutterActivity() {
     }
 
 
-    private fun getPermission() {
-        if (isPermissionGranted()) return
-
-        Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).run {
-            startActivity(this)
+    private fun getPermission(result: Result) {
+        if (isPermissionGranted()) {
+            result.success(true)
+            return
         }
+
+        val requestCode = requestCodeBase++;
+        pendingResult[requestCode] = result
+        startActivityForResult(
+            Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS), requestCode)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        Timber.d("Permission result: $requestCode, $resultCode, $pendingResult")
+        pendingResult.remove(requestCode)?.success(isPermissionGranted())
     }
 
     private fun isPermissionGranted() =
