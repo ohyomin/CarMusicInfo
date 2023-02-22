@@ -4,75 +4,47 @@ part of 'music_info_bloc.dart';
 class MusicInfoState {
 
   const MusicInfoState({
-    required this.title,
-    required this.artist,
-    required this.albumArt,
-    required this.isPlay,
-    required this.albumArtHash,
-    this.extra = '',
-    this.isGrantPermission = false,
+    this.metaData = MusicMetaData.initData,
+    this.isPlay = false,
+    this.isGrantedPermission = false,
   });
 
-  final String title;
-  final String artist;
-  final List<int> albumArt;
+  final MusicMetaData metaData;
   final bool isPlay;
-  final String albumArtHash;
-  final String extra;
-  final bool isGrantPermission;
+  final bool isGrantedPermission;
 
   MusicInfoState copyWith({
-    String? title,
-    String? artist,
-    List<int>? albumArt,
+    MusicMetaData? metaData,
     bool? isPlay,
-    String? albumArtHash,
-    String? extra,
-    bool? isPermissionGranted,
+    bool? isGrantedPermission,
   }) {
     return MusicInfoState(
-      title: title ?? this.title,
-      artist: artist ?? this.artist,
-      albumArt: albumArt ?? this.albumArt,
+      metaData: metaData ?? this.metaData,
       isPlay: isPlay ?? this.isPlay,
-      albumArtHash: albumArtHash ?? this.albumArtHash,
-      extra: extra ?? this.extra,
-      isGrantPermission: isPermissionGranted ?? this.isGrantPermission,
+      isGrantedPermission: isGrantedPermission ?? this.isGrantedPermission,
     );
   }
 
   @override
   bool operator ==(Object other) {
     return other is MusicInfoState
-      && other.title == title
-      && other.artist == artist
-      && other.albumArtHash == albumArtHash
+      && other.metaData == metaData
       && other.isPlay == isPlay
-      && other.extra == extra
-      && other.isGrantPermission == isGrantPermission;
+      && other.isGrantedPermission == isGrantedPermission;
   }
 
   @override
   int get hashCode => (
-      title.hashCode +
-      artist.hashCode +
+      metaData.hashCode +
       isPlay.hashCode +
-      albumArtHash.hashCode +
-      isGrantPermission.hashCode +
-      extra.hashCode
+      isGrantedPermission.hashCode
   ).toInt();
 
-  static const initState = MusicInfoState(
-      title: '',
-      artist: '',
-      albumArt: <int>[],
-      isPlay: false,
-      albumArtHash: Constants.defaultBlurHash,
-  );
+  static const initState = MusicInfoState();
 
   @override
   String toString() {
-    return 'title:$title, permission: $isGrantPermission';
+    return 'title:${metaData.title}, permission: $isGrantedPermission';
   }
 }
 

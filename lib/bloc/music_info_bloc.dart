@@ -1,15 +1,13 @@
-import 'package:blurhash_dart/blurhash_dart.dart';
-
 import 'package:bloc/bloc.dart';
-import 'package:car_music_info/core/constants.dart';
+import 'package:car_music_info/model/music_meta_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:image/image.dart' as img;
 
 import '../core/method_channel.dart';
 
 part 'music_info_event.dart';
 part 'music_info_state.dart';
+part 'car_key_handler.dart';
 
 class MusicInfoBloc extends Bloc<MusicInfoEvent, MusicInfoState> {
   MusicInfoBloc() : super(MusicInfoState.initState) {
@@ -18,101 +16,25 @@ class MusicInfoBloc extends Bloc<MusicInfoEvent, MusicInfoState> {
     on<CheckPermission>((event, emit) async {
       final granted = await methodChannel.isPermissionGranted();
       if (granted) methodChannel.registerListener();
-      emit(state.copyWith(isPermissionGranted: granted));
+      emit(state.copyWith(isGrantedPermission: granted));
     });
     on<RequestPermission>((event, emit) async {
       final result = await methodChannel.requestPermission();
       if (result) methodChannel.registerListener();
-      emit(state.copyWith(isPermissionGranted: result));
+      emit(state.copyWith(isGrantedPermission: result));
     });
 
     add(const CheckPermission());
     _listenMusicInfoStream();
   }
 
-  KeyEventResult _keyHandler(
-    FocusNode node,
-    RawKeyEvent event,
-    VoidCallback block,
-  ) {
-    emit(state.copyWith(extra: event.logicalKey.keyLabel));
-    if (event.isKeyPressed(LogicalKeyboardKey.enter)
-        || event.isKeyPressed(LogicalKeyboardKey.select)
-        || event.isKeyPressed(LogicalKeyboardKey.gameButtonSelect)) {
-      block.call();
-      return KeyEventResult.handled;
-    }
+  late final _keyEventManager = CarKeyHandler(this);
 
-    if (event.isKeyPressed(LogicalKeyboardKey.mediaTrackNext) ||
-        event.isKeyPressed(LogicalKeyboardKey.mediaFastForward)) {
-      add(MusicCommand.fastForward);
-      return KeyEventResult.handled;
-    }
-
-    if (event.isKeyPressed(LogicalKeyboardKey.mediaTrackPrevious) ||
-        event.isKeyPressed(LogicalKeyboardKey.mediaRewind)) {
-      add(MusicCommand.rewind);
-      return KeyEventResult.handled;
-    }
-
-    if (event.isKeyPressed(LogicalKeyboardKey.mediaPlay) ||
-        event.isKeyPressed(LogicalKeyboardKey.play)) {
-      add(MusicCommand.play);
-      return KeyEventResult.handled;
-    }
-
-    if (event.isKeyPressed(LogicalKeyboardKey.mediaPause) ||
-      event.isKeyPressed(LogicalKeyboardKey.pause)) {
-      add(MusicCommand.pause);
-      return KeyEventResult.handled;
-    }
-
-    if (event.isKeyPressed(LogicalKeyboardKey.mediaPlayPause)) {
-      add(state.isPlay ? MusicCommand.pause : MusicCommand.play);
-      return KeyEventResult.handled;
-    }
-
-    return KeyEventResult.ignored;
-  }
-
-  late final FocusScopeNode globalFocusNode = FocusScopeNode(
-    onKey: (node, event) {
-      return _keyHandler(node, event, () {
-      });
-    },
-  );
-
-  late final FocusNode rewindButtonFocusNode = FocusNode(
-    onKey: (node, event) {
-      return _keyHandler(node, event, () {
-        add(MusicCommand.rewind);
-      });
-    },
-  );
-
-  late final FocusNode playButtonFocusNode = FocusNode(
-    onKey: (node, event) {
-      return _keyHandler(node, event, () {
-        add(state.isPlay ? MusicCommand.pause : MusicCommand.play);
-      });
-    },
-  );
-
-  late final FocusNode fastForwardFocusNode = FocusNode(
-    onKey: (node, event) {
-      return _keyHandler(node, event, () {
-        add(MusicCommand.fastForward);
-      });
-    },
-  );
-
-  late final FocusNode albumArtFocusNode = FocusNode(
-    onKey: (node, event) {
-      return _keyHandler(node, event, () {
-        // TODO app launch
-      });
-    },
-  );
+  FocusScopeNode get globalFocusNode => _keyEventManager.globalFocusNode;
+  FocusNode get rewindButtonFocusNode => _keyEventManager.rewindButtonFocusNode;
+  FocusNode get playButtonFocusNode => _keyEventManager.playButtonFocusNode;
+  FocusNode get fastForwardButtonFocusNode => _keyEventManager.fastForwardFocusNode;
+  FocusNode get albumArtFocusNode => _keyEventManager.albumArtFocusNode;
 
   final MethodChannelInterface methodChannel = MethodChannelInterface.get();
 
@@ -137,19 +59,13 @@ class MusicInfoBloc extends Bloc<MusicInfoEvent, MusicInfoState> {
     MetaChanged event,
     Emitter<MusicInfoState> emit,
   ) {
-    final map = event.metaData;
-    String title = map['title'] ?? '';
-    String artist = map['artist'] ?? '';
+    final map = event.data;
+    final metaData = MusicMetaData.fromMap(map);
     bool isPlay = map['isPlay'] == 1 ? true : false;
-    List<int> albumArt = map['albumArt'] ?? <int>[];
-    String albumArtHash = _getBlurHash(albumArt);
 
     final newState = state.copyWith(
-      title: title,
-      artist: artist,
+      metaData: metaData,
       isPlay: isPlay,
-      albumArt: albumArt,
-      albumArtHash: albumArtHash,
     );
 
     emit(newState);
@@ -159,14 +75,5 @@ class MusicInfoBloc extends Bloc<MusicInfoEvent, MusicInfoState> {
     methodChannel.musicInfoStream.listen((Map<String, dynamic> map) {
       add(MetaChanged(map));
     });
-  }
-
-  String _getBlurHash(List<int> albumArt) {
-    if (albumArt.isEmpty) return Constants.defaultBlurHash;
-
-    final decodedImg = img.decodeImage(Uint8List.fromList(albumArt));
-    if (decodedImg == null) return Constants.defaultBlurHash;
-
-    return BlurHash.encode(decodedImg, numCompX: 5, numCompY: 5).hash;
   }
 }

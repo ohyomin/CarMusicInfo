@@ -1,6 +1,7 @@
 
 import 'package:car_music_info/component/remote_controller_widget.dart';
 import 'package:car_music_info/component/music_info_widget.dart';
+import 'package:car_music_info/model/music_meta_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,40 +18,32 @@ class MusicInfoBox extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const SizedBox(height: 10),
-          BlocBuilder<MusicInfoBloc, MusicInfoState>(
-            buildWhen: (prev, cur) => prev.title != cur.title,
-            builder: (context, state) {
+          BlocSelector<MusicInfoBloc, MusicInfoState, MusicMetaData>(
+            selector: (state) => state.metaData,
+            builder: (context, metaData) {
               return Flexible(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30.0),
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 1000),
                     child: MetaInfoWidget(
-                      key: ValueKey(state.title),
-                      title: state.title,
-                      artist: state.artist,
-                      albumArt: state.albumArt,
+                      key: ValueKey(metaData.title),
+                      title: metaData.title,
+                      artist: metaData.artist,
+                      albumArt: metaData.albumArt,
                     ),
                   ),
                 ),
               );
             },
           ),
-          BlocConsumer<MusicInfoBloc, MusicInfoState>(
-            listener: (context, state) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.extra),
-                  duration: const Duration(seconds: 1),
-                ),
-              );
-            },
-            buildWhen: (prev, cur) => prev.isPlay != cur.isPlay,
-            builder: (context, state) {
+          BlocSelector<MusicInfoBloc, MusicInfoState, bool>(
+            selector: (state) => state.isPlay,
+            builder: (context, isPlay) {
               return Container(
                 height: 100,
                 padding: const EdgeInsets.only(bottom: 10),
-                child: RemoteControllerWidget(isPlay: state.isPlay),
+                child: RemoteControllerWidget(isPlay: isPlay),
               );
             },
           ),

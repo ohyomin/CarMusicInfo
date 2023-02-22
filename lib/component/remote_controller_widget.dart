@@ -62,11 +62,16 @@ class _RemoteControllerWidgetState extends State<RemoteControllerWidget>
             focusNode: musicInfoBloc.playButtonFocusNode,
             borderRadius: BorderRadius.circular(10),
             onTap: () {
+              MusicCommand command;
               if (widget.isPlay) {
-                musicInfoBloc.add(MusicCommand.pause);
+                command = MusicCommand.pause;
               } else {
-                musicInfoBloc.add(MusicCommand.play);
+                command = MusicCommand.play;
               }
+              Future.delayed(
+                const Duration(milliseconds: 100),
+                () => musicInfoBloc.add(command),
+              );
             },
             child: Padding(
               padding: const EdgeInsets.all(3.0),
@@ -81,7 +86,7 @@ class _RemoteControllerWidgetState extends State<RemoteControllerWidget>
         _IconButton(
           iconData: Icons.fast_forward_rounded,
           callback: () => musicInfoBloc.add(MusicCommand.fastForward),
-          focusNode: musicInfoBloc.fastForwardFocusNode,
+          focusNode: musicInfoBloc.fastForwardButtonFocusNode,
         ),
       ],
     );

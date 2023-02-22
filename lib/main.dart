@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         title: '',
         builder: (context, child) {
           return BlocListener<MusicInfoBloc, MusicInfoState> (
-            listenWhen: (_, cur) => !cur.isGrantPermission,
+            listenWhen: (_, cur) => !cur.isGrantedPermission,
             listener: (context, state) {
               final bloc = context.read<MusicInfoBloc>();
               bloc.add(const RequestPermission());

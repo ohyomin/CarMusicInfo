@@ -1,6 +1,7 @@
 
 import 'package:car_music_info/bloc/music_info_bloc.dart';
 import 'package:car_music_info/component/glass_box.dart';
+import 'package:car_music_info/model/music_meta_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
@@ -98,11 +99,9 @@ class BackgroundBlur extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MusicInfoBloc, MusicInfoState>(
-      buildWhen: (previous, current) {
-        return previous.albumArtHash != current.albumArtHash;
-      },
-      builder: (context, state) {
+    return BlocSelector<MusicInfoBloc, MusicInfoState, MusicMetaData>(
+      selector: (state) => state.metaData,
+      builder: (context, metaData) {
         return ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: Stack(
@@ -110,8 +109,8 @@ class BackgroundBlur extends StatelessWidget {
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 1000),
                 child: BlurHash(
-                  hash: state.albumArtHash,
-                  key: ValueKey(state.albumArtHash),
+                  hash: metaData.albumArtHash,
+                  key: ValueKey(metaData.albumArtHash),
                 ),
               ),
               Container(

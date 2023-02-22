@@ -7,9 +7,9 @@ abstract class MusicInfoEvent {
 
 class MetaChanged extends MusicInfoEvent {
 
-  const MetaChanged(this.metaData);
+  const MetaChanged(this.data);
 
-  final Map<String, dynamic> metaData;
+  final Map<String, dynamic> data;
 }
 
 enum Command {
