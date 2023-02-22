@@ -23,14 +23,13 @@ class GlassBox extends StatelessWidget {
         height: height ?? double.infinity,
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.white.withOpacity(0.3)),
             borderRadius: _borderRadius,
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Colors.white.withOpacity(0.5),
-                Colors.white.withOpacity(0.4),
+                Colors.black.withOpacity(0.3),
+                Colors.black.withOpacity(0.1),
               ],
             ),
           ),

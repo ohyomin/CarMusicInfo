@@ -28,7 +28,7 @@ class MainPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(15),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Flexible(
                       child: ConstrainedBox(
@@ -116,11 +116,11 @@ class BackgroundBlur extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                     colors: [
-                      Colors.black.withOpacity(0.5),
                       Colors.black.withOpacity(0.2),
+                      Colors.black.withOpacity(0.4),
                     ],
                   ),
                 ),

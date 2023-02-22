@@ -78,7 +78,8 @@ class _RemoteControllerWidgetState extends State<RemoteControllerWidget>
               child: AnimatedIcon(
                 icon: AnimatedIcons.play_pause,
                 progress: _playPauseController,
-                size: 45,
+                size: 40,
+                color: Colors.white,
               ),
             ),
           ),
@@ -115,8 +116,8 @@ class _IconButton extends StatelessWidget {
         focusNode: focusNode,
         child: Icon(
           iconData,
-          color: Colors.black,
-          size: 50,
+          color: Colors.white,
+          size: 40,
         ),
       ),
     );

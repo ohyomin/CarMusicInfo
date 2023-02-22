@@ -27,13 +27,14 @@ class MetaInfoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
+      color: Colors.white,
       fontSize: _titleSize,
       fontWeight: FontWeight.bold,
     );
 
     final artistStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
       fontSize: _artistSize,
-      color: const Color(0xFF262424),
+      color: const Color(0xFFEAE5E5),
     );
 
     final height = MediaQuery.of(context).size.height;
