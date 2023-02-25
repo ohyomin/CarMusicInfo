@@ -52,7 +52,7 @@ class _RemoteControllerWidgetState extends State<RemoteControllerWidget>
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         _IconButton(
-          iconData: Icons.fast_rewind_rounded,
+          iconData: Icons.skip_previous_rounded,
           callback: () => musicInfoBloc.add(MusicCommand.rewind),
           focusNode: musicInfoBloc.rewindButtonFocusNode,
         ),
@@ -85,7 +85,7 @@ class _RemoteControllerWidgetState extends State<RemoteControllerWidget>
           ),
         ),
         _IconButton(
-          iconData: Icons.fast_forward_rounded,
+          iconData: Icons.skip_next_rounded,
           callback: () => musicInfoBloc.add(MusicCommand.fastForward),
           focusNode: musicInfoBloc.fastForwardButtonFocusNode,
         ),

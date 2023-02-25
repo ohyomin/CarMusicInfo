@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.ohmnia.car_music_info">
 
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
     <application
         android:name="com.ohmnia.car_music_info.CarMusicInfoApplication"
         android:icon="@mipmap/ic_launcher"
-        android:label="car_music_info">
+        android:label="CarMusicInfo">
         <service
             android:name=".service.MediaNotificationService"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"

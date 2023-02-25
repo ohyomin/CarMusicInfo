@@ -21,6 +21,7 @@ abstract class MethodChannelInterface {
   Future<bool> requestPermission();
   Future<bool> isPermissionGranted();
   void registerListener();
+  void startApp();
 }
 
 class MusicInfoMethodChannel extends MethodChannelInterface {
@@ -84,5 +85,10 @@ class MusicInfoMethodChannel extends MethodChannelInterface {
   @override
   void registerListener() {
     _commandChannel.invokeMethod('registerListener');
+  }
+
+  @override
+  void startApp() {
+    _commandChannel.invokeMethod('startApp');
   }
 }

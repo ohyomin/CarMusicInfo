@@ -2,6 +2,8 @@ package com.ohmnia.car_music_info.core
 
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.media.AudioManager
 import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSession.Token
@@ -9,6 +11,10 @@ import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
+import android.util.Log
+import android.view.KeyEvent
+import androidx.core.app.ActivityOptionsCompat
 import com.ohmnia.car_music_info.intent.IntentFactory
 import com.ohmnia.car_music_info.model.InfoChangedEvent.MetaChangedEvent
 import com.ohmnia.car_music_info.model.InfoChangedEvent.PlayStateEvent
@@ -32,6 +38,8 @@ class MusicInfoManager @Inject constructor(
 
     private lateinit var handler: Handler
 
+    lateinit var musicStarter: MusicStarter
+
     private fun List<SessionCallback>.isNewController(controller: MediaController) =
         none{ it.sameToken(controller.sessionToken) }
 
@@ -51,15 +59,26 @@ class MusicInfoManager @Inject constructor(
 
             mediaSessionManager.addOnActiveSessionsChangedListener(this, componentName, handler)
 
+            musicStarter = MusicStarter(context).apply {
+                play {  }
+            }
             isInit = true
         }
     }
 
+    fun dispose() = musicStarter.dispose()
 
     fun play() = mainCallback?.play()
     fun pause() = mainCallback?.pause()
     fun fastForward() = mainCallback?.fastForward()
     fun rewind() = mainCallback?.rewind()
+
+    fun startApp(context: Context) {
+        val current = mainCallback ?: return
+        val packageName = current.controller.packageName
+        val intent = context.packageManager.getLaunchIntentForPackage(packageName) ?: return
+        context.startActivity(intent)
+    }
 
     private fun registerMediaControllerCallback(controllers: MutableList<MediaController>?) {
         controllers?.forEach { controller ->
@@ -89,7 +108,7 @@ class MusicInfoManager @Inject constructor(
         }
     }
 
-    inner class SessionCallback(private val controller: MediaController):
+    inner class SessionCallback(val controller: MediaController):
         MediaController.Callback() {
 
         private var isMainController = false

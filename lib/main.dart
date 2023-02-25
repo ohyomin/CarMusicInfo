@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'bloc/music_info_bloc.dart';
 
@@ -44,7 +45,7 @@ class MyApp extends StatelessWidget {
         },
         theme: ThemeData(
           primarySwatch: Colors.blue,
-          fontFamily: 'Dongle',
+          //fontFamily: 'Dongle',
         ),
         home: const MainPage(),
       ),

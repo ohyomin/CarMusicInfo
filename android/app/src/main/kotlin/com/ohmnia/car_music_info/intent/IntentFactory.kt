@@ -5,6 +5,7 @@ import com.ohmnia.car_music_info.core.MusicInfoStore
 import com.ohmnia.car_music_info.model.InfoChangedEvent
 import com.ohmnia.car_music_info.model.InfoChangedEvent.*
 import com.ohmnia.car_music_info.model.MusicInfo
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 

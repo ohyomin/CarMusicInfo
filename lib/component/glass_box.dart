@@ -1,3 +1,4 @@
+import 'package:car_music_info/util/extensions.dart';
 import 'package:flutter/material.dart';
 
 final _borderRadius = BorderRadius.circular(30);
@@ -16,14 +17,16 @@ class GlassBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isWide = MediaQuery.of(context).isWide;
+    final radius =  isWide ? _borderRadius :BorderRadius.zero;
     return ClipRRect(
-      borderRadius: _borderRadius,
+      borderRadius: radius,
       child: SizedBox(
         width: width ?? double.infinity,
         height: height ?? double.infinity,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: _borderRadius,
+            borderRadius: radius,
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,

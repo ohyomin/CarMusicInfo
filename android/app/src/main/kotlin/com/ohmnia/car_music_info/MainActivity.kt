@@ -1,10 +1,8 @@
 package com.ohmnia.car_music_info
 
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.provider.Settings
 import android.view.View
 import android.view.WindowManager
@@ -75,6 +73,7 @@ class MainActivity: FlutterActivity() {
                     "pause" -> musicInfoManager.pause()
                     "rewind" -> musicInfoManager.rewind()
                     "fastForward" -> musicInfoManager.fastForward()
+                    "startApp" -> musicInfoManager.startApp(this)
                     "registerListener" -> musicInfoManager.registerMediaSessionListener(this)
                     "isPermissionGranted" -> {
                         result.success(isPermissionGranted())
@@ -89,6 +88,10 @@ class MainActivity: FlutterActivity() {
             }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        musicInfoManager.dispose()
+    }
 
     private fun getPermission(result: Result) {
         if (isPermissionGranted()) {

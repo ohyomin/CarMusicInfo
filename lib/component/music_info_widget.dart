@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:car_music_info/bloc/music_info_bloc.dart';
+import 'package:car_music_info/core/method_channel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
@@ -9,8 +10,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 
 import '../core/constants.dart';
 
-const _titleSize = 30.0;
-const _artistSize = 26.0;
+const _titleSize = 18.0;
+const _artistSize = 15.0;
 
 class MetaInfoWidget extends StatelessWidget {
   const MetaInfoWidget({
@@ -47,19 +48,19 @@ class MetaInfoWidget extends StatelessWidget {
         _MarqueeText(
           fontSize: _titleSize,
           style: titleStyle,
-          text: '$title, ${MediaQuery.of(context).size.height.toInt()}',
+          text: title,
         ),
         _MarqueeText(
           fontSize: _artistSize,
           style: artistStyle,
           text: artist,
         ),
-        SizedBox(height: height * 0.01),
+        SizedBox(height: height * 0.03),
         Flexible(
           child: ConstrainedBox(
             constraints: const BoxConstraints(
-              maxWidth: 180,
-              maxHeight: 180,
+              maxWidth: 150,
+              maxHeight: 150,
             ),
             child: Container(
               decoration: BoxDecoration(
@@ -94,7 +95,9 @@ class MetaInfoWidget extends StatelessWidget {
                       color: Colors.transparent,
                       child: InkWell(
                         borderRadius: BorderRadius.circular(10),
-                        onTap: () {},
+                        onTap: () {
+                          MethodChannelInterface.get().startApp();
+                        },
                         focusNode: musicInfoBloc.albumArtFocusNode,
                       ),
                     ),
@@ -149,6 +152,7 @@ class _MarqueeText extends StatelessWidget {
           text: text,
           style: style,
           scrollAxis: Axis.horizontal,
+          startAfter: const Duration(seconds: 2),
           velocity: 30.0,
           blankSpace: 70,
           showFadingOnlyWhenScrolling: true,

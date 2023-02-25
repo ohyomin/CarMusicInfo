@@ -6,7 +6,7 @@ class MusicInfoState {
   const MusicInfoState({
     this.metaData = MusicMetaData.initData,
     this.isPlay = false,
-    this.isGrantedPermission = false,
+    this.isGrantedPermission = true,
   });
 
   final MusicMetaData metaData;
