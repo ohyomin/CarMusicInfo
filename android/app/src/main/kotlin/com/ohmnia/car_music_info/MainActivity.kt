@@ -7,10 +7,14 @@ import android.provider.Settings
 import android.view.View
 import android.view.WindowManager
 import androidx.core.app.NotificationManagerCompat
-import com.ohmnia.car_music_info.core.Constants
+import com.ohmnia.car_music_info.util.Constants
 import com.ohmnia.car_music_info.core.MusicInfoManager
+import com.ohmnia.car_music_info.core.MusicStarter
+import com.ohmnia.car_music_info.di.AppModule
 import com.ohmnia.car_music_info.di.DaggerDIComponent
+//import com.ohmnia.car_music_info.di.DaggerDIComponent
 import com.ohmnia.car_music_info.methodchannel.MusicInfoStreamChannel
+import com.ohmnia.car_music_info.util.MusicInfoStorage
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -35,13 +39,17 @@ class MainActivity: FlutterActivity() {
         synchronized(this) {
             if (isInit) return
 
-            DaggerDIComponent.create().inject(this)
-            isInit = true
+            MusicInfoStorage.init(this)
+            DaggerDIComponent.builder()
+                .context(this)
+                .build()
+                .inject(this)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         setTransparentStatusBar()
     }

@@ -1,7 +1,7 @@
 package com.ohmnia.car_music_info.methodchannel
 
-import com.ohmnia.car_music_info.core.Constants
-import com.ohmnia.car_music_info.core.MusicInfoStore
+import com.ohmnia.car_music_info.util.Constants
+import com.ohmnia.car_music_info.model.MusicInfoStore
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.reactivex.disposables.Disposable

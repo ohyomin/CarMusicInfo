@@ -1,7 +1,8 @@
-package com.ohmnia.car_music_info.core
+package com.ohmnia.car_music_info.model
 
 import com.ohmnia.car_music_info.intent.Intent
 import com.ohmnia.car_music_info.model.MusicInfo
+import com.ohmnia.car_music_info.util.MusicInfoStorage
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.BehaviorSubject
@@ -12,11 +13,14 @@ import javax.inject.Singleton
 
 @Singleton
 class MusicInfoStore @Inject constructor() {
+    private var prevMusicInfo: MusicInfo =
+        MusicInfoStorage.getPrevMusicInfo() ?: MusicInfo.empty
+
     private val intents = BehaviorSubject.create<Intent<MusicInfo>>()
 
     val store: Observable<MusicInfo> = intents
         .observeOn(AndroidSchedulers.mainThread())
-        .scan(MusicInfo.empty) { oldState, intent -> intent.reduce(oldState) }
+        .scan(prevMusicInfo) { oldState, intent -> intent.reduce(oldState) }
         .distinctUntilChanged()
 
     fun process(intent: Intent<MusicInfo>) = intents.onNext(intent)

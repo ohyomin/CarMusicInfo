@@ -1,5 +1,6 @@
 package com.ohmnia.car_music_info.core
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -8,25 +9,22 @@ import android.media.browse.MediaBrowser
 import android.media.session.MediaController
 import android.os.Bundle
 import android.os.SystemClock
-import android.util.Log
 import android.view.KeyEvent
 import android.widget.Toast
+import com.ohmnia.car_music_info.util.MusicInfoStorage
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.concurrent.thread
 
-class MusicStarter(private val context: Context) {
-    companion object {
-        private var mediaBrowser: MediaBrowser? = null
-        const val TAG = "MusicLauncher"
-    }
+@Singleton
+class MusicStarter @Inject constructor(val context: Context) {
+    private var mediaBrowser: MediaBrowser? = null
 
+    private fun getComponent() = MusicInfoStorage.getPrevComponent()
 
-    private fun getComponent(): ComponentName {
-        return ComponentName("com.naver.vibe", "com.naver.vibe.auto.VibeMediaBrowserService")
-    }
-
-    fun play(componentName: ComponentName? = getComponent(),
-             callback: () -> Unit = {}) {
+    fun play(componentName: ComponentName? = getComponent()) {
+        Timber.d("music starter")
         if (componentName == null) return
 
         mediaBrowser?.disconnect()
@@ -43,7 +41,6 @@ class MusicStarter(private val context: Context) {
                     simulateMediaButton(componentName.packageName)
 
                     Toast.makeText(context, "음악 시작", Toast.LENGTH_SHORT).show()
-                    callback()
                 }
 
                 override fun onConnectionFailed() {
@@ -52,9 +49,8 @@ class MusicStarter(private val context: Context) {
                     simulateMediaButton(componentName.packageName)
 
                     thread {
-                        Thread.sleep(3000)
+                        Thread.sleep(1000)
                         sendMediaKeyEvent()
-                        callback()
                     }
                     Toast.makeText(context, "음악 시작", Toast.LENGTH_SHORT).show()
                 }

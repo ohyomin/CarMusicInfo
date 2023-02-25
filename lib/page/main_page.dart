@@ -126,9 +126,12 @@ class BackgroundBlur extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isWide = MediaQuery.of(context).isWide;
-    return BlocSelector<MusicInfoBloc, MusicInfoState, MusicMetaData>(
-      selector: (state) => state.metaData,
-      builder: (context, metaData) {
+    return BlocBuilder<MusicInfoBloc, MusicInfoState>(
+      buildWhen: (prev, current) {
+        return current.metaData.albumArt.isNotEmpty
+            && prev.metaData != current.metaData;
+      },
+      builder: (context, state) {
         return ClipRRect(
           borderRadius: isWide ? BorderRadius.circular(20) : BorderRadius.zero,
           child: Stack(
@@ -136,8 +139,8 @@ class BackgroundBlur extends StatelessWidget {
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 1000),
                 child: BlurHash(
-                  hash: metaData.albumArtHash,
-                  key: ValueKey(metaData.albumArtHash),
+                  hash: state.metaData.albumArtHash,
+                  key: ValueKey(state.metaData.albumArtHash),
                 ),
               ),
               Container(

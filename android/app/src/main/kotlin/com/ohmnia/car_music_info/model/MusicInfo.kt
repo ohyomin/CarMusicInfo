@@ -1,7 +1,6 @@
 package com.ohmnia.car_music_info.model
 
 import android.graphics.Bitmap
-import android.media.MediaMetadata
 import java.io.ByteArrayOutputStream
 
 data class MusicInfo(
@@ -13,22 +12,21 @@ data class MusicInfo(
     companion object {
         val empty = MusicInfo("", "", null, false)
 
+        fun byteFromBitmap(albumArt: Bitmap?): ByteArray? {
+            return albumArt?.let { art ->
+                val stream = ByteArrayOutputStream()
+                art.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                stream.toByteArray()
+            }
+        }
     }
 
     fun toMap(): Map<String, Any?> {
         return mutableMapOf<String, Any?>().apply {
             put("title", title)
             put("artist", artist)
-            put("albumArt", byteFromBitmap())
+            put("albumArt", byteFromBitmap(albumArt))
             put("isPlay", if (isPlay) 1 else 0)
-        }
-    }
-
-    private fun byteFromBitmap(): ByteArray? {
-        return albumArt?.let { art ->
-            val stream = ByteArrayOutputStream()
-            art.compress(Bitmap.CompressFormat.PNG, 100, stream)
-            stream.toByteArray()
         }
     }
 
@@ -41,4 +39,12 @@ data class MusicInfo(
     }
 
     private fun getBitmapSize() = albumArt?.byteCount ?: 0
+
+    override fun hashCode(): Int {
+        var result = title.hashCode()
+        result = 31 * result + artist.hashCode()
+        result = 31 * result + getBitmapSize()
+        result = 31 * result + isPlay.hashCode()
+        return result
+    }
 }

@@ -2,8 +2,6 @@ package com.ohmnia.car_music_info.core
 
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.media.AudioManager
 import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSession.Token
@@ -11,14 +9,14 @@ import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import android.os.Handler
 import android.os.Looper
-import android.os.SystemClock
-import android.util.Log
-import android.view.KeyEvent
-import androidx.core.app.ActivityOptionsCompat
 import com.ohmnia.car_music_info.intent.IntentFactory
 import com.ohmnia.car_music_info.model.InfoChangedEvent.MetaChangedEvent
 import com.ohmnia.car_music_info.model.InfoChangedEvent.PlayStateEvent
 import com.ohmnia.car_music_info.service.MediaNotificationService
+import com.ohmnia.car_music_info.util.MusicInfoStorage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -26,7 +24,8 @@ import javax.inject.Singleton
 
 @Singleton
 class MusicInfoManager @Inject constructor(
-    private val intentFactory: IntentFactory
+    private val intentFactory: IntentFactory,
+    private val musicStarter: MusicStarter
 ) :
     MediaSessionManager.OnActiveSessionsChangedListener {
 
@@ -38,7 +37,7 @@ class MusicInfoManager @Inject constructor(
 
     private lateinit var handler: Handler
 
-    lateinit var musicStarter: MusicStarter
+    //private lateinit var musicStarter = MusicStarter()
 
     private fun List<SessionCallback>.isNewController(controller: MediaController) =
         none{ it.sameToken(controller.sessionToken) }
@@ -59,16 +58,14 @@ class MusicInfoManager @Inject constructor(
 
             mediaSessionManager.addOnActiveSessionsChangedListener(this, componentName, handler)
 
-            musicStarter = MusicStarter(context).apply {
-                play {  }
-            }
+            musicStarter.play()
             isInit = true
         }
     }
 
     fun dispose() = musicStarter.dispose()
 
-    fun play() = mainCallback?.play()
+    fun play() = mainCallback?.play() ?: musicStarter.play()
     fun pause() = mainCallback?.pause()
     fun fastForward() = mainCallback?.fastForward()
     fun rewind() = mainCallback?.rewind()
@@ -139,6 +136,10 @@ class MusicInfoManager @Inject constructor(
                 intentFactory.process(event)
             }
             intentFactory.process(PlayStateEvent(controller.isActiveState()))
+
+            CoroutineScope(Dispatchers.IO).launch {
+                MusicInfoStorage.savePackageInfo(controller.packageName)
+            }
         }
 
         private fun clearMainCallback() {
@@ -153,12 +154,19 @@ class MusicInfoManager @Inject constructor(
 
             if (!isMainController || metadata == null) return
 
+
             intentFactory.process(MetaChangedEvent(metadata))
+            CoroutineScope(Dispatchers.IO).launch {
+                MusicInfoStorage.saveMeta(metadata)
+            }
         }
 
         override fun onSessionDestroyed() {
             super.onSessionDestroyed()
-            clearMainCallback()
+            if (isMainController) {
+                intentFactory.process(PlayStateEvent(isPlay = false))
+                clearMainCallback()
+            }
             callbacks.remove(this)
             Timber.d("Destroy callback ${callbacks.size}")
         }
