@@ -1,7 +1,9 @@
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:car_music_info/bloc/music_info_bloc.dart';
 import 'package:car_music_info/core/method_channel.dart';
+import 'package:car_music_info/util/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
@@ -10,8 +12,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 
 import '../core/constants.dart';
 
-const _titleSize = 18.0;
-const _artistSize = 15.0;
 
 class MetaInfoWidget extends StatelessWidget {
   const MetaInfoWidget({
@@ -27,18 +27,31 @@ class MetaInfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final height = MediaQuery.of(context).size.height;
+    final density = MediaQuery.of(context).devicePixelRatio;
+    // Normalization [0 - 1.0]
+    double validDensity = density.clamp(1.7, 2.5);
+    double factor = (validDensity - 1.7) / (2.5 - 1.7);
+
+
+    final titleSize = lerpDouble(28.0, 18.0, factor)!.roundToDouble();
+    final artistSize = lerpDouble(25.0, 15.0, factor)!.roundToDouble();
+    final maxAlbumArtSize = lerpDouble(250.0, 150.0, factor)!.roundToDouble();
+
+    Log.d('hmhm', 'density $density, factor $factor, size $maxAlbumArtSize');
+
     final titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
       color: Colors.white,
-      fontSize: _titleSize,
+      fontSize: titleSize,
       fontWeight: FontWeight.bold,
     );
 
     final artistStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
-      fontSize: _artistSize,
+      fontSize: artistSize,
       color: const Color(0xFFEAE5E5),
     );
 
-    final height = MediaQuery.of(context).size.height;
 
     final musicInfoBloc = context.read<MusicInfoBloc>();
 
@@ -46,21 +59,21 @@ class MetaInfoWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _MarqueeText(
-          fontSize: _titleSize,
+          fontSize: titleSize,
           style: titleStyle,
           text: title,
         ),
         _MarqueeText(
-          fontSize: _artistSize,
+          fontSize: artistSize,
           style: artistStyle,
           text: artist,
         ),
-        SizedBox(height: height * 0.03),
+        SizedBox(height: height * 0.04),
         Flexible(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 150,
-              maxHeight: 150,
+            constraints: BoxConstraints(
+              maxWidth: maxAlbumArtSize,
+              maxHeight: maxAlbumArtSize,
             ),
             child: Container(
               decoration: BoxDecoration(
