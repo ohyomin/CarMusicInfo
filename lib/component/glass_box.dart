@@ -25,17 +25,17 @@ class GlassBox extends StatelessWidget {
         width: width ?? double.infinity,
         height: height ?? double.infinity,
         child: Container(
-          decoration: BoxDecoration(
-            borderRadius: radius,
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.black.withOpacity(0.3),
-                Colors.black.withOpacity(0.1),
-              ],
-            ),
-          ),
+          // decoration: BoxDecoration(
+          //   borderRadius: radius,
+          //   gradient: LinearGradient(
+          //     begin: Alignment.topLeft,
+          //     end: Alignment.bottomRight,
+          //     colors: [
+          //       Colors.black.withOpacity(0.3),
+          //       Colors.black.withOpacity(0.1),
+          //     ],
+          //   ),
+          // ),
           child: Center(
             child: child,
           ),

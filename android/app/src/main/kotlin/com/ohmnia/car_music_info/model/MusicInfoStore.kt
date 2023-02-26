@@ -27,5 +27,5 @@ class MusicInfoStore @Inject constructor() {
 
     private val internalDisposable = store.subscribe(::internalLogger)
 
-    private fun internalLogger(state: MusicInfo) = Timber.i("State: $state")
+    private fun internalLogger(state: MusicInfo) = Timber.d("State: $state")
 }

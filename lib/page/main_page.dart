@@ -2,7 +2,6 @@
 import 'package:car_music_info/bloc/music_info_bloc.dart';
 import 'package:car_music_info/component/glass_box.dart';
 import 'package:car_music_info/component/hangul_watch.dart';
-import 'package:car_music_info/model/music_meta_data.dart';
 import 'package:car_music_info/util/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

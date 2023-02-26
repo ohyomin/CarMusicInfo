@@ -1,8 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:blurhash_dart/blurhash_dart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
-import 'package:meta/meta.dart';
 import '../core/constants.dart';
 
 @immutable
@@ -20,11 +18,12 @@ class MusicMetaData {
   final List<int> albumArt;
   final String albumArtHash;
 
-  static MusicMetaData fromMap(Map<String, dynamic> map) {
+  static Future<MusicMetaData> fromMap(Map<String, dynamic> map) async {
     String title = map['title'] ?? '';
     String artist = map['artist'] ?? '';
     List<int> albumArt = map['albumArt'] ?? <int>[];
-    String albumArtHash = _getBlurHash(albumArt);
+
+    String albumArtHash = await compute<List<int>, String>(_getBlurHash, albumArt);
 
     return MusicMetaData(
       title: title,

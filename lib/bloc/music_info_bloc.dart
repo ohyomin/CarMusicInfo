@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:car_music_info/model/music_meta_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +12,10 @@ part 'car_key_handler.dart';
 
 class MusicInfoBloc extends Bloc<MusicInfoEvent, MusicInfoState> {
   MusicInfoBloc() : super(MusicInfoState.initState) {
-    on<MetaChanged>(_onMetaChanged);
+    on<MetaChanged>(
+      _onMetaChanged,
+      transformer: restartable(),
+    );
     on<MusicCommand>(_onMusicCommand);
     on<CheckPermission>((event, emit) async {
       final granted = await methodChannel.isPermissionGranted();
@@ -58,9 +62,9 @@ class MusicInfoBloc extends Bloc<MusicInfoEvent, MusicInfoState> {
   void _onMetaChanged(
     MetaChanged event,
     Emitter<MusicInfoState> emit,
-  ) {
+  ) async {
     final map = event.data;
-    final metaData = MusicMetaData.fromMap(map);
+    final metaData = await MusicMetaData.fromMap(map);
     bool isPlay = map['isPlay'] == 1 ? true : false;
 
     final newState = state.copyWith(

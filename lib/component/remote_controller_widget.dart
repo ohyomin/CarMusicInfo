@@ -1,4 +1,3 @@
-
 import 'package:car_music_info/bloc/music_info_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -69,7 +68,7 @@ class _RemoteControllerWidgetState extends State<RemoteControllerWidget>
                 command = MusicCommand.play;
               }
               Future.delayed(
-                const Duration(milliseconds: 100),
+                const Duration(milliseconds: 50),
                 () => musicInfoBloc.add(command),
               );
             },
@@ -112,7 +111,12 @@ class _IconButton extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
-        onTap: callback,
+        onTap: () {
+          Future.delayed(
+            const Duration(milliseconds: 50),
+            () => callback(),
+          );
+        }              ,
         focusNode: focusNode,
         child: Icon(
           iconData,

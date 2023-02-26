@@ -1,6 +1,7 @@
 package com.ohmnia.car_music_info.model
 
 import android.graphics.Bitmap
+import timber.log.Timber
 import java.io.ByteArrayOutputStream
 
 data class MusicInfo(
@@ -14,8 +15,10 @@ data class MusicInfo(
 
         fun byteFromBitmap(albumArt: Bitmap?): ByteArray? {
             return albumArt?.let { art ->
+                val quality = if (art.byteCount >= 500000) 50 else 100
+
                 val stream = ByteArrayOutputStream()
-                art.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                art.compress(Bitmap.CompressFormat.PNG, quality, stream)
                 stream.toByteArray()
             }
         }

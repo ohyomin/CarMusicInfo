@@ -46,14 +46,14 @@ object MusicInfoStorage {
 
     fun savePackageInfo(packageName: String) {
         val intent = Intent(MediaBrowserService.SERVICE_INTERFACE)
-        packageManager.queryIntentServices(intent, 0).forEach {
-            if (it.serviceInfo.packageName == packageName) {
-                Timber.d("Found component : ${it.serviceInfo}")
-                pref.edit().run {
-                    putString(PACKAGE_NAME, it.serviceInfo.packageName)
-                    putString(COMPONENT_NAME, it.serviceInfo.name)
-                    apply()
-                }
+        packageManager.queryIntentServices(intent, 0).firstOrNull { resolveInfo ->
+            resolveInfo.serviceInfo.packageName == packageName
+        }?.let { resolveInfo ->
+            Timber.d("Found component : ${resolveInfo.serviceInfo}")
+            pref.edit().run {
+                putString(PACKAGE_NAME, resolveInfo.serviceInfo.packageName)
+                putString(COMPONENT_NAME, resolveInfo.serviceInfo.name)
+                apply()
             }
         }
     }
@@ -66,17 +66,21 @@ object MusicInfoStorage {
     }
 
     fun saveMeta(data: MediaMetadata) {
+        Timber.d("start save meta")
         val title = data.getString(MediaMetadata.METADATA_KEY_TITLE) ?: ""
         val artist = data.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: ""
         val albumArt = data.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
             ?: data.getBitmap(MediaMetadata.METADATA_KEY_ART)
 
+        val albumArtString = getAlbumArtEncodedString(albumArt)
+
         pref.edit().run {
             putString(TITLE, title)
             putString(ARTIST, artist)
-            putString(ALBUM_ART, getAlbumArtEncodedString(albumArt))
+            putString(ALBUM_ART, albumArtString)
             apply()
         }
+        Timber.d("save meta $title, ${albumArtString.length}")
     }
 
     fun getPrevMusicInfo(): MusicInfo? {
@@ -84,7 +88,7 @@ object MusicInfoStorage {
         val artist = pref.getString(ARTIST, null)
         val albumArt = getAlbumArt()
 
-        Timber.d("title:$title, artist:$artist")
+        Timber.d("title:$title, artist:$artist, album:$albumArt")
         if (title == null || artist == null) return null
 
         return MusicInfo(

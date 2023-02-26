@@ -16,6 +16,7 @@ import com.ohmnia.car_music_info.service.MediaNotificationService
 import com.ohmnia.car_music_info.util.MusicInfoStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -58,7 +59,7 @@ class MusicInfoManager @Inject constructor(
 
             mediaSessionManager.addOnActiveSessionsChangedListener(this, componentName, handler)
 
-            musicStarter.play()
+            //musicStarter.play()
             isInit = true
         }
     }
@@ -67,7 +68,7 @@ class MusicInfoManager @Inject constructor(
 
     fun play() = mainCallback?.play() ?: musicStarter.play()
     fun pause() = mainCallback?.pause()
-    fun fastForward() = mainCallback?.fastForward()
+    fun fastForward() = mainCallback?.fastForward() ?: musicStarter.play()
     fun rewind() = mainCallback?.rewind()
 
     fun startApp(context: Context) {
@@ -149,16 +150,36 @@ class MusicInfoManager @Inject constructor(
             }
         }
 
+
+        private var bufferedRunnable: Runnable? = null
+        private var prevMediaMetadata: MediaMetadata? = null
+
+        private fun MediaMetadata.isSameSong(prev: MediaMetadata?): Boolean {
+            if (prev == null) return false
+
+            return description.title == prev.description.title
+        }
+
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             super.onMetadataChanged(metadata)
 
             if (!isMainController || metadata == null) return
 
-
-            intentFactory.process(MetaChangedEvent(metadata))
-            CoroutineScope(Dispatchers.IO).launch {
-                MusicInfoStorage.saveMeta(metadata)
+            if (metadata.isSameSong(prevMediaMetadata) && bufferedRunnable != null) {
+                Timber.d("Skip prev meta data. ${prevMediaMetadata?.description}")
+                handler.removeCallbacks(bufferedRunnable!!)
             }
+
+            prevMediaMetadata = metadata
+
+            bufferedRunnable = Runnable {
+                intentFactory.process(MetaChangedEvent(metadata))
+                CoroutineScope(Dispatchers.IO).launch {
+                    MusicInfoStorage.saveMeta(metadata)
+                }
+            }
+
+            handler.postDelayed(bufferedRunnable!!, 100)
         }
 
         override fun onSessionDestroyed() {

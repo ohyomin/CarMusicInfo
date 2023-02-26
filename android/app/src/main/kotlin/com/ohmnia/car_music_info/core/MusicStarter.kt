@@ -46,12 +46,9 @@ class MusicStarter @Inject constructor(val context: Context) {
                 override fun onConnectionFailed() {
                     super.onConnectionFailed()
                     Timber.i("onConnectionFailed ${componentName.packageName}")
-                    simulateMediaButton(componentName.packageName)
+                    //simulateMediaButton(componentName.packageName)
 
-                    thread {
-                        Thread.sleep(1000)
-                        sendMediaKeyEvent()
-                    }
+                    sendMediaKeyEvent()
                     Toast.makeText(context, "음악 시작", Toast.LENGTH_SHORT).show()
                 }
             },
