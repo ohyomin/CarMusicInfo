@@ -46,15 +46,19 @@ object MusicInfoStorage {
 
     fun savePackageInfo(packageName: String) {
         val intent = Intent(MediaBrowserService.SERVICE_INTERFACE)
-        packageManager.queryIntentServices(intent, 0).firstOrNull { resolveInfo ->
-            resolveInfo.serviceInfo.packageName == packageName
-        }?.let { resolveInfo ->
-            Timber.d("Found component : ${resolveInfo.serviceInfo}")
-            pref.edit().run {
-                putString(PACKAGE_NAME, resolveInfo.serviceInfo.packageName)
-                putString(COMPONENT_NAME, resolveInfo.serviceInfo.name)
-                apply()
+        try {
+            packageManager.queryIntentServices(intent, 0).firstOrNull { resolveInfo ->
+                resolveInfo.serviceInfo.packageName == packageName
+            }?.let { resolveInfo ->
+                Timber.d("Found component : ${resolveInfo.serviceInfo}")
+                pref.edit().run {
+                    putString(PACKAGE_NAME, resolveInfo.serviceInfo.packageName)
+                    putString(COMPONENT_NAME, resolveInfo.serviceInfo.name)
+                    apply()
+                }
             }
+        } catch (e: Exception) {
+            Timber.d("query error $e")
         }
     }
 
@@ -64,6 +68,8 @@ object MusicInfoStorage {
         Timber.d("prev package:$packageName, name:$componentName")
         return ComponentName(packageName, componentName)
     }
+
+    fun getPrevControllerPackage() = pref.getString(PACKAGE_NAME, null)
 
     fun saveMeta(data: MediaMetadata) {
         val title = data.getString(MediaMetadata.METADATA_KEY_TITLE) ?: ""

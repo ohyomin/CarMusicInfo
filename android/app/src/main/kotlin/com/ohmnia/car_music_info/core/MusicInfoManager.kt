@@ -38,8 +38,6 @@ class MusicInfoManager @Inject constructor(
 
     private lateinit var handler: Handler
 
-    //private lateinit var musicStarter = MusicStarter()
-
     private fun List<SessionCallback>.isNewController(controller: MediaController) =
         none{ it.sameToken(controller.sessionToken) }
 
@@ -57,9 +55,15 @@ class MusicInfoManager @Inject constructor(
             val controllers = mediaSessionManager.getActiveSessions(componentName)
             registerMediaControllerCallback(controllers)
 
+            val prevMainPackage = MusicInfoStorage.getPrevControllerPackage()
+            if (prevMainPackage != null && mainCallback == null) {
+                callbacks.firstOrNull { it.controller.packageName == prevMainPackage }
+                    ?.setMainCallback()
+            }
+
             mediaSessionManager.addOnActiveSessionsChangedListener(this, componentName, handler)
 
-            musicStarter.play()
+            play()
             isInit = true
         }
     }
@@ -76,8 +80,9 @@ class MusicInfoManager @Inject constructor(
     fun rewind() = mainCallback?.rewind()
 
     fun startApp(context: Context) {
-        val current = mainCallback ?: return
-        val packageName = current.controller.packageName
+        val packageName = mainCallback?.controller?.packageName
+            ?: MusicInfoStorage.getPrevControllerPackage()
+            ?: return
         val intent = context.packageManager.getLaunchIntentForPackage(packageName) ?: return
         context.startActivity(intent)
     }

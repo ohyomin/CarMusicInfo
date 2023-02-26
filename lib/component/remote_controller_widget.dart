@@ -60,6 +60,7 @@ class _RemoteControllerWidgetState extends State<RemoteControllerWidget>
           child: InkWell(
             focusNode: musicInfoBloc.playButtonFocusNode,
             borderRadius: BorderRadius.circular(10),
+            focusColor: Colors.white.withOpacity(0.2),
             onTap: () {
               MusicCommand command;
               if (widget.isPlay) {
@@ -110,6 +111,7 @@ class _IconButton extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
+        focusColor: Colors.white.withOpacity(0.2),
         borderRadius: BorderRadius.circular(10),
         onTap: () {
           Future.delayed(

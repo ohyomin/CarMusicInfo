@@ -3,8 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.ohmnia.car_music_info">
 
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MEDIA_BUTTON"/>
+        </intent>
+    </queries>
     <application
         android:name="com.ohmnia.car_music_info.CarMusicInfoApplication"
         android:icon="@mipmap/ic_launcher2"

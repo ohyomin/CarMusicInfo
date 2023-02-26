@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:car_music_info/bloc/music_info_bloc.dart';
 import 'package:car_music_info/core/method_channel.dart';
-import 'package:car_music_info/util/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
@@ -31,15 +30,13 @@ class MetaInfoWidget extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
     final density = MediaQuery.of(context).devicePixelRatio;
     // Normalization [0 - 1.0]
-    double validDensity = density.clamp(1.7, 2.5);
-    double factor = (validDensity - 1.7) / (2.5 - 1.7);
+    double validDensity = density.clamp(1.2, 2.5);
+    double factor = (validDensity - 1.2) / (2.5 - 1.2);
 
 
     final titleSize = lerpDouble(28.0, 18.0, factor)!.roundToDouble();
     final artistSize = lerpDouble(25.0, 15.0, factor)!.roundToDouble();
-    final maxAlbumArtSize = lerpDouble(250.0, 150.0, factor)!.roundToDouble();
-
-    Log.d('hmhm', 'density $density, factor $factor, size $maxAlbumArtSize');
+    final maxAlbumArtSize = lerpDouble(220.0, 150.0, factor)!.roundToDouble();
 
     final titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
       color: Colors.white,
@@ -112,6 +109,7 @@ class MetaInfoWidget extends StatelessWidget {
                           MethodChannelInterface.get().startApp();
                         },
                         focusNode: musicInfoBloc.albumArtFocusNode,
+                        focusColor: Colors.white.withOpacity(0.2),
                       ),
                     ),
                   ),
