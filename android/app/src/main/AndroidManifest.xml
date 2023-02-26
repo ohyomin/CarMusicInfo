@@ -7,7 +7,7 @@
         tools:ignore="QueryAllPackagesPermission" />
     <application
         android:name="com.ohmnia.car_music_info.CarMusicInfoApplication"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher2"
         android:label="CarMusicInfo">
         <service
             android:name=".service.MediaNotificationService"
