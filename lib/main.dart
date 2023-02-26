@@ -1,5 +1,6 @@
 import 'package:car_music_info/bloc/bloc_observer.dart';
 import 'package:car_music_info/page/main_page.dart';
+import 'package:car_music_info/page/splash_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,23 +32,16 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: '',
         builder: (context, child) {
-          return BlocListener<MusicInfoBloc, MusicInfoState> (
-            listenWhen: (_, cur) => !cur.isGrantedPermission,
-            listener: (context, state) {
-              final bloc = context.read<MusicInfoBloc>();
-              bloc.add(const RequestPermission());
-            },
-            child: MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
-              child: child!,
-            ),
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
+            child: child!,
           );
         },
         theme: ThemeData(
           primarySwatch: Colors.blue,
           //fontFamily: 'Dongle',
         ),
-        home: const MainPage(),
+        home: const SplashPage(),
       ),
     );
   }

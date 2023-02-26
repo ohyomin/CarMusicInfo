@@ -1,6 +1,5 @@
 package com.ohmnia.car_music_info.core
 
-import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -15,7 +14,6 @@ import com.ohmnia.car_music_info.util.MusicInfoStorage
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.concurrent.thread
 
 @Singleton
 class MusicStarter @Inject constructor(val context: Context) {
@@ -24,8 +22,11 @@ class MusicStarter @Inject constructor(val context: Context) {
     private fun getComponent() = MusicInfoStorage.getPrevComponent()
 
     fun play(componentName: ComponentName? = getComponent()) {
-        Timber.d("music starter")
-        if (componentName == null) return
+        if (componentName == null) {
+            Timber.d("Send media key event")
+            sendMediaKeyEvent()
+            return
+        }
 
         mediaBrowser?.disconnect()
         mediaBrowser = MediaBrowser(

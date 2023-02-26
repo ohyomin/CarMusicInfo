@@ -59,12 +59,16 @@ class MusicInfoManager @Inject constructor(
 
             mediaSessionManager.addOnActiveSessionsChangedListener(this, componentName, handler)
 
-            //musicStarter.play()
+            musicStarter.play()
             isInit = true
         }
     }
 
-    fun dispose() = musicStarter.dispose()
+    fun dispose() {
+        Timber.d("dispose")
+        musicStarter.dispose()
+        callbacks.forEach(SessionCallback::dispose)
+    }
 
     fun play() = mainCallback?.play() ?: musicStarter.play()
     fun pause() = mainCallback?.pause()
@@ -110,6 +114,8 @@ class MusicInfoManager @Inject constructor(
         MediaController.Callback() {
 
         private var isMainController = false
+
+        fun dispose() = controller.unregisterCallback(this)
 
         override fun onPlaybackStateChanged(state: PlaybackState?) {
             super.onPlaybackStateChanged(state)
@@ -179,7 +185,7 @@ class MusicInfoManager @Inject constructor(
                 }
             }
 
-            handler.postDelayed(bufferedRunnable!!, 100)
+            handler.postDelayed(bufferedRunnable!!, 200)
         }
 
         override fun onSessionDestroyed() {

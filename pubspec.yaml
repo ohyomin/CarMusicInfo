@@ -45,6 +45,8 @@ dependencies:
   meta: ^1.8.0
   intl: ^0.18.0
   bloc_concurrency: ^0.2.1
+  flutter_native_splash: ^2.2.18
+  lottie: ^2.2.0
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +72,8 @@ flutter:
 
   assets:
     - assets/google_fonts/
+    - assets/loading.gif
+    - assets/loading.json
 
   fonts:
     - family: Dongle

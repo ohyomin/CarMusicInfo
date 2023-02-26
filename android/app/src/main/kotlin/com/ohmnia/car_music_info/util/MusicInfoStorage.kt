@@ -66,7 +66,6 @@ object MusicInfoStorage {
     }
 
     fun saveMeta(data: MediaMetadata) {
-        Timber.d("start save meta")
         val title = data.getString(MediaMetadata.METADATA_KEY_TITLE) ?: ""
         val artist = data.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: ""
         val albumArt = data.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)

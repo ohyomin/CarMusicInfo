@@ -1,6 +1,7 @@
 
 import 'package:car_music_info/component/remote_controller_widget.dart';
 import 'package:car_music_info/component/music_info_widget.dart';
+import 'package:car_music_info/model/music_meta_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,23 +18,19 @@ class MusicInfoBox extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const SizedBox(height: 10),
-          BlocBuilder<MusicInfoBloc, MusicInfoState>(
-            //selector: (state) => state.metaData,
-            buildWhen: (prev, current) {
-              return current.metaData.albumArt.isNotEmpty
-                  && current.metaData != prev.metaData;
-            },
-            builder: (context, state) {
+          BlocSelector<MusicInfoBloc, MusicInfoState, MusicMetaData>(
+            selector: (state) => state.metaData,
+            builder: (context, metaData) {
               return Flexible(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30.0),
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 1000),
                     child: MetaInfoWidget(
-                      key: ValueKey(state.metaData.title),
-                      title: state.metaData.title,
-                      artist: state.metaData.artist,
-                      albumArt: state.metaData.albumArt,
+                      key: ValueKey(metaData.title),
+                      title: metaData.title,
+                      artist: metaData.artist,
+                      albumArt: metaData.albumArt,
                     ),
                   ),
                 ),
