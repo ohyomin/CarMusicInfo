@@ -7,6 +7,7 @@ import android.media.session.MediaController
 import android.media.session.MediaSession.Token
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import com.ohmnia.car_music_info.intent.IntentFactory
@@ -84,6 +85,10 @@ class MusicInfoManager @Inject constructor(
             ?: MusicInfoStorage.getPrevControllerPackage()
             ?: return
         val intent = context.packageManager.getLaunchIntentForPackage(packageName) ?: return
+
+        if (packageName.contains("vibe")) {
+            intent.data = Uri.parse("vibe://player/...")
+        }
         context.startActivity(intent)
     }
 
