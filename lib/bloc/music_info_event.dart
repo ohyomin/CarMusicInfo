@@ -39,3 +39,7 @@ class CheckPermission extends MusicInfoEvent {
 class RegisterListener extends MusicInfoEvent {
   const RegisterListener();
 }
+
+class AlbumArtScale extends MusicInfoEvent {
+  const AlbumArtScale();
+}

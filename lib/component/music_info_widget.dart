@@ -17,12 +17,14 @@ class MetaInfoWidget extends StatelessWidget {
     required this.title,
     required this.artist,
     required this.albumArt,
+    required this.albumArtScaleIndex,
     Key? key,
   }) : super(key: key);
 
   final String title;
   final String artist;
   final List<int> albumArt;
+  final int albumArtScaleIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +38,8 @@ class MetaInfoWidget extends StatelessWidget {
 
     final titleSize = lerpDouble(28.0, 18.0, factor)!.roundToDouble();
     final artistSize = lerpDouble(25.0, 15.0, factor)!.roundToDouble();
-    final maxAlbumArtSize = lerpDouble(220.0, 150.0, factor)!.roundToDouble();
+    final maxAlbumArtSize = lerpDouble(220.0, 150.0, factor)!.roundToDouble()
+        * albumArtScale[albumArtScaleIndex];
 
     final titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
       color: Colors.white,

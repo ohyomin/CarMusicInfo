@@ -1,15 +1,14 @@
 import 'package:car_music_info/bloc/bloc_observer.dart';
-import 'package:car_music_info/page/main_page.dart';
 import 'package:car_music_info/page/splash_page.dart';
+import 'package:car_music_info/util/shred_pref.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'bloc/music_info_bloc.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   LicenseRegistry.addLicense(() async* {
@@ -18,6 +17,7 @@ void main() {
   });
 
   Bloc.observer = const MusicInfoBlocObserver();
+  await Pref().init();
   runApp(const MyApp());
 }
 

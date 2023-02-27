@@ -18,9 +18,13 @@ class MusicInfoBox extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const SizedBox(height: 10),
-          BlocSelector<MusicInfoBloc, MusicInfoState, MusicMetaData>(
-            selector: (state) => state.metaData,
-            builder: (context, metaData) {
+          BlocBuilder<MusicInfoBloc, MusicInfoState>(
+            buildWhen: (prev, cur) {
+              return prev.metaData != cur.metaData
+                  || prev.albumArtScaleIndex != cur.albumArtScaleIndex;
+            },
+            builder: (context, state) {
+              final metaData = state.metaData;
               return Flexible(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -31,6 +35,7 @@ class MusicInfoBox extends StatelessWidget {
                       title: metaData.title,
                       artist: metaData.artist,
                       albumArt: metaData.albumArt,
+                      albumArtScaleIndex: state.albumArtScaleIndex,
                     ),
                   ),
                 ),

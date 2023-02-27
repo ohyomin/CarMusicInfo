@@ -139,15 +139,20 @@ class BackgroundBlur extends StatelessWidget {
                   key: ValueKey(albumArtHash),
                 ),
               ),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black.withOpacity(0.1),
-                      Colors.black.withOpacity(1.0),
-                    ],
+              GestureDetector(
+                onDoubleTap: () {
+                  context.read<MusicInfoBloc>().add(const AlbumArtScale());
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.1),
+                        Colors.black.withOpacity(1.0),
+                      ],
+                    ),
                   ),
                 ),
               ),

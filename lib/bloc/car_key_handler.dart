@@ -79,7 +79,7 @@ class CarKeyHandler {
   late final FocusNode albumArtFocusNode = FocusNode(
     onKey: (node, event) {
       return _keyHandler(node, event, () {
-        // TODO app launch
+        MethodChannelInterface.get().startApp();
       });
     },
   );

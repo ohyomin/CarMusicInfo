@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:car_music_info/model/music_meta_data.dart';
+import 'package:car_music_info/util/shred_pref.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
@@ -9,6 +10,8 @@ import '../core/method_channel.dart';
 part 'music_info_event.dart';
 part 'music_info_state.dart';
 part 'car_key_handler.dart';
+
+final List<double> albumArtScale = [1.0, 1.1, 1.2, 1.3, 0.7, 0.8, 0.9];
 
 class MusicInfoBloc extends Bloc<MusicInfoEvent, MusicInfoState> {
   MusicInfoBloc() : super(MusicInfoState.initState) {
@@ -27,12 +30,19 @@ class MusicInfoBloc extends Bloc<MusicInfoEvent, MusicInfoState> {
       if (result) methodChannel.registerListener();
       emit(state.copyWith(isGrantedPermission: result));
     });
+    on<AlbumArtScale>((event, emit) {
+      final index = (state.albumArtScaleIndex + 1) % _maxScaleIndex;
+      Pref().putScaleIndex(index);
+      emit(state.copyWith(albumArtScaleIndex: index));
+    });
 
     add(const CheckPermission());
     _listenMusicInfoStream();
   }
 
   late final _keyEventManager = CarKeyHandler(this);
+  static const _maxScaleIndex = 7;
+
 
   FocusScopeNode get globalFocusNode => _keyEventManager.globalFocusNode;
   FocusNode get rewindButtonFocusNode => _keyEventManager.rewindButtonFocusNode;
